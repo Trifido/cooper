@@ -2,6 +2,7 @@ package Listener;
 
 import com.eclipsesource.json.*;
 import es.upv.dsic.gti_ia.core.*;
+import java.util.ArrayList;
 import java.util.logging.*;
 
 /**
@@ -11,12 +12,16 @@ import java.util.logging.*;
  *  -Nombres de variables en ¡INGLES!
  *  -Variables propias de la clase con ¡THIS.!
  * 
- * @author Alberto Meana
+ * @author Alberto Meana, Andrés Ortiz
  */
 public class Listener extends SingleAgent{
-    
+    //Listener (this) agent name
+    private String listenerName="Listener";
+    //Controller name
+    private String controllerName="Controller";
     private ACLMessage result, in, out;
     JsonObject key, answer, msg;
+    
     
     public Listener(AgentID aid) throws Exception {
         
@@ -138,4 +143,23 @@ public class Listener extends SingleAgent{
         this.send( out );
     }
     
+    /**
+     * Une y Redirecciona las respuestas de los sensores al agente controler
+     * 
+     * @author Andrés Ortiz
+     * @param sensorResponse Arraylist de respuestas de los sensores
+     */
+    private void redirectResponses(ArrayList<JsonObject> sensorResponse){
+        JsonObject response=new JsonObject();
+        for(JsonObject obj : sensorResponse){
+            response.merge(obj);
+        }
+        
+        ACLMessage out = new ACLMessage();
+        out.setSender(this.getAid());
+        out.setReceiver(new AgentID(controllerName));
+        out.setContent(response.toString());
+        
+        this.send(out);
+    }
 }
