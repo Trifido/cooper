@@ -17,7 +17,7 @@ public class Controller extends SingleAgent{
     private Pair<Integer, Integer> gps;
     private int[][] radar;
     private double[][] scanner;
-    private Square[][] world;
+    private int[][] world;
     
     public Controller(AgentID aid) throws Exception {
         super(aid);
@@ -26,12 +26,12 @@ public class Controller extends SingleAgent{
         this.gps = new Pair(0,0);
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
-        this.world = new Square[500][500];
+        this.world = new int[500][500];
         
         // Inicializar el mapa completo a valor "desconocido"
-        for (Square[] row : this.world){
-            for (Square s : row){
-                s = Square.UNKNOWN;
+        for (int[] row : this.world){
+            for (int s : row){
+                s = 1;
             }
         }
     }
@@ -68,26 +68,32 @@ public class Controller extends SingleAgent{
         return act;
     }
      
-    public Pair Heuristic(){
+    public String Heuristic(){
         Pair<Integer, Integer> newpos = new Pair(2,2);
+        this.minValue= Double.POSITIVE_INFINITY;
+        double benefit;
         
         if(this.battery < 2)
-            System.out.println("REPOSTAR");
+            return "REPOSTAR";
         //Si el bot está sobre la casilla 2 (objetivo), fin
-        if(this.radar[2][2] == 2){
-            System.out.println("ENCONTRADA");
-        }
+        if(this.radar[2][2] == 2)
+            return "ENCONTRADO";
         else{
             for(int i=1; i<4; i++)
                 for(int j=1; j<4; j++)
-                    if(radar[i][j] != 1 && this.minValue > this.scanner[i][j]){
-                        this.minValue= this.scanner[i][j];
-                        newpos.first= i;
-                        newpos.second= j;
+                    if((i!=2 && j!= 2) && radar[i][j] != 1){ 
+                        benefit= this.scanner[i][j]/this.world[i][j];
+                        if(this.minValue > benefit){
+                            this.minValue= benefit;
+                            newpos.first= i;
+                            newpos.second= j;
+                        }
                     }
+            
+            world[newpos.first][newpos.second]++;
+            
+            return nextAction(newpos);
         }
-        
-        return newpos;
     }
     
     @Override
