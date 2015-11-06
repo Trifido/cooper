@@ -13,7 +13,7 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
 public class Controller extends SingleAgent{
     
     private int battery;
-    private double maxValue;
+    private double minValue;
     private Pair<Integer, Integer> gps;
     private int[][] radar;
     private double[][] scanner;
@@ -29,7 +29,7 @@ public class Controller extends SingleAgent{
     public Controller(AgentID aid) throws Exception {
         super(aid);
         this.battery = 0;
-        this.maxValue= Double.NEGATIVE_INFINITY;
+        this.minValue= Double.NEGATIVE_INFINITY;
         this.gps = new Pair(0,0);
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
@@ -55,21 +55,21 @@ public class Controller extends SingleAgent{
      */
     public double getBenefit(int i, int j){
         if (i == 1 && j == 1)
-            return this.scanner[i][j]/this.world[gps.first - 1][gps.second - 1];
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second - 1].second;
         else if (i == 1 && j == 2)
-            return this.scanner[i][j]/this.world[gps.first][gps.second - 1];
+            return this.scanner[i][j] * this.world[gps.first][gps.second - 1].second;
         else if (i == 1 && j == 3) 
-            return this.scanner[i][j]/this.world[gps.first + 1][gps.second - 1];
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second - 1].second;
         else if (i == 2 && j == 1)
-            return this.scanner[i][j]/this.world[gps.first - 1][gps.second];
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second].second;
         else if (i == 2 && j == 3)
-            return this.scanner[i][j]/this.world[gps.first + 1][gps.second];
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second].second;
         else if (i == 3 && j == 1)
-            return this.scanner[i][j]/this.world[gps.first - 1][gps.second + 1];
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second + 1].second;
         else if (i == 3 && j == 2)
-            return this.scanner[i][j]/this.world[gps.first][gps.second + 1];
+            return this.scanner[i][j] * this.world[gps.first][gps.second + 1].second;
         else
-            return this.scanner[i][j]/this.world[gps.first + 1][gps.second + 1];
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second + 1].second;
     }
     
     /**
@@ -85,35 +85,35 @@ public class Controller extends SingleAgent{
         
         if (npos.first == 1 && npos.second == 1){
             act = "moveNW";
-            this.world[gps.first - 1][gps.second - 1]++;
+            this.world[gps.first - 1][gps.second - 1].second++;
         }
         else if (npos.first == 1 && npos.second == 2){
             act = "moveN";
-            this.world[gps.first][gps.second - 1]++;
+            this.world[gps.first][gps.second - 1].second++;
         }
         else if (npos.first == 1 && npos.second == 3){
             act = "moveNE";
-            this.world[gps.first + 1][gps.second - 1]++;
+            this.world[gps.first + 1][gps.second - 1].second++;
         }
         else if (npos.first == 2 && npos.second == 1){
             act = "moveW";
-            this.world[gps.first - 1][gps.second]++;
+            this.world[gps.first - 1][gps.second].second++;
         }
         else if (npos.first == 2 && npos.second == 3){
             act = "moveE";
-            this.world[gps.first + 1][gps.second]++;
+            this.world[gps.first + 1][gps.second].second++;
         }
         else if (npos.first == 3 && npos.second == 1){
             act = "moveSW";
-            this.world[gps.first - 1][gps.second + 1]++;
+            this.world[gps.first - 1][gps.second + 1].second++;
         }
         else if (npos.first == 3 && npos.second == 2){
             act = "moveS";
-            this.world[gps.first][gps.second + 1]++;
+            this.world[gps.first][gps.second + 1].second++;
         }
         else{
             act = "moveSE";
-            this.world[gps.first + 1][gps.second + 1]++;
+            this.world[gps.first + 1][gps.second + 1].second++;
         }
         
         return act;
@@ -127,7 +127,7 @@ public class Controller extends SingleAgent{
      */
     public String Heuristic(){
         Pair<Integer, Integer> newpos = new Pair(2,2);
-        this.maxValue= Double.NEGATIVE_INFINITY;
+        this.minValue= Double.POSITIVE_INFINITY;
         double benefit;
         
         if(this.battery < 2)
@@ -140,14 +140,14 @@ public class Controller extends SingleAgent{
                 for(int j=1; j<4; j++)
                     if((i!=2 && j!= 2) && radar[i][j] != 1){ 
                         benefit= getBenefit(i, j);
-                        if(this.maxValue < benefit){
-                            this.maxValue= benefit;
+                        if(this.minValue > benefit){
+                            this.minValue= benefit;
                             newpos.first= i;
                             newpos.second= j;
                         }
                     }
                     else if(i!=2 && j!= 2){
-                        world[i][j]= -1;
+                        world[i][j].second= -1;
                     }
             
             return nextAction(newpos);
