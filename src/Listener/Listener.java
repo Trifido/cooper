@@ -12,7 +12,7 @@ import java.util.logging.*;
  *  -Nombres de variables en ¡INGLES!
  *  -Variables propias de la clase con ¡THIS.!
  * 
- * @author Alberto Meana, Andrés Ortiz
+ * @author Alberto Meana, Andrés Ortiz, Nikolai González
  */
 public class Listener extends SingleAgent{
     //Listener (this) agent name
@@ -20,7 +20,10 @@ public class Listener extends SingleAgent{
     //Controller name
     private String controllerName="Controller";
     private ACLMessage result, in, out;
-    JsonObject key, answer, msg;
+    JsonObject key, answer, msg, mensaRecibido;
+    ArrayList <JsonObject> mensajes;
+    int contador = 0;
+    boolean recibidos = false;
     
     
     public Listener(AgentID aid) throws Exception {
@@ -32,6 +35,7 @@ public class Listener extends SingleAgent{
         this.key = new JsonObject();
         this.answer = new JsonObject();
         this.msg = new JsonObject();
+        this.mensajes = new ArrayList();
         
     }
     
@@ -161,5 +165,50 @@ public class Listener extends SingleAgent{
         out.setContent(response.toString());
         
         this.send(out);
+    }
+    /**
+     * Función para escuchar los mensajes y guardarlos en un Array de JsonObject 
+     * 
+     * @author Nikolai González
+     */
+    private void EscucharMensajes(){
+        String entero, separador;
+        try {
+            while(contador <=4)
+            {
+                in = this.receiveACLMessage();
+                //System.out.println("\nRecibido mensaje <"+in.getContent());
+                entero = in.getContent();
+                separador = ":";
+                String[] temp;
+                temp = entero.split(separador,2);
+                mensaRecibido.add(temp[0],temp[1]);
+                if (mensajes.isEmpty()){
+                    mensajes.add(mensaRecibido);
+                    contador++;
+                }
+                else{
+                    for (JsonObject json:mensajes)
+                    {
+                        if (!json.get(temp[0]).toString().equals(temp[0]))
+                        {
+                            mensajes.add(mensaRecibido);
+                            contador++;
+                        }
+                    }
+                }
+            }
+            if (contador ==4){
+                recibidos = true;
+                redirectResponses(mensajes);
+            }
+        } catch (InterruptedException ex) {
+            System.out.println("Fallo en la recepción de mensajes.");
+            //si da error se desloguea???
+            //logout( this.key.get( "result" ).asString() );
+        }
+        
+        
+        
     }
 }
