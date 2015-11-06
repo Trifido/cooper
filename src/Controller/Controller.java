@@ -123,6 +123,17 @@ public class Controller extends SingleAgent{
         }
     }
     
+    /**
+     * Función que envía al servidor la nueva localización
+     * 
+     * @author Rafael Ruiz
+     * @param localization Nueva posición para el agente
+     */
+    public void sendLocalization(String localization)
+    {
+        
+    }
+    
     @Override
     public void execute(){
         
