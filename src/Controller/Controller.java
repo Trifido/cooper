@@ -1,5 +1,8 @@
 package Controller;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
 
@@ -18,6 +21,9 @@ public class Controller extends SingleAgent{
     private int[][] radar;
     private double[][] scanner;
     private Pair<Square,Integer>[][] world;
+    
+    private ACLMessage out;
+    JsonObject key, answer, msg;
     
     /**
      * Constructor del Agente Controller.
