@@ -1,7 +1,13 @@
 package Controller;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -163,6 +169,46 @@ public class Controller extends SingleAgent{
     public void sendLocalization(String localization)
     {
         
+    }
+    
+    /**
+     * Espera a la recepción de un objeto JSON del listener
+     * 
+     * @author Andrés Ortiz
+     * @throws java.lang.InterruptedException
+     * 
+     */
+    public void receiveMessage() throws InterruptedException{
+       
+       ACLMessage in = this.receiveACLMessage();
+       JsonObject message= JsonObject.readFrom(in.getContent());
+       battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
+       JsonObject gpsObject=message.get("gps").asObject();
+       gps.first=(int) gpsObject.getFloat("x",gps.first);
+       gps.second=(int) gpsObject.getInt("y",gps.second);
+       JsonArray rad=message.get("radar").asArray();
+       int j=0,i2=0;
+       for(int i=0;i<rad.size();i++){
+           radar[j][i]=(int)rad.get(i).asFloat();
+           i2++;
+           if(i2==4){
+               j++;
+               i2=0;
+           }
+       }
+       
+       
+       JsonArray scan=message.get("scanner").asArray();
+       j=0;
+       i2=0;
+       for(int i=0;i<scan.size();i++){
+           scanner[j][i]=scan.get(i).asFloat();
+           i2++;
+           if(i2==4){
+               j++;
+               i2=0;
+           }
+       }
     }
     
     @Override
