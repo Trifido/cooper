@@ -25,7 +25,13 @@ public class Listener extends SingleAgent{
     int contador = 0;
     boolean recibidos = false;
     
-    
+    /**
+     * Constructor del agente Listener
+     * 
+     * @param aid ID del agente para Magentix
+     * @throws Exception Error de creación
+     * @author Alberto Meana
+     */
     public Listener(AgentID aid) throws Exception {
         
         super(aid);
@@ -43,6 +49,7 @@ public class Listener extends SingleAgent{
      * Función de ejecución de la hebra.
      * Realiza el test de login y logout.
      * 
+     * @author Alberto Meana
      */
     @Override
     public void execute(){
