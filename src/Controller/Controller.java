@@ -8,7 +8,7 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
  * Clase Controller
  * Recibe mensajes del agente Listener y realiza la toma de decisiones
  * 
- * @author Alba Ríos
+ * @author Alba Ríos and Vicente Martínez
  */
 public class Controller extends SingleAgent{
     
@@ -36,6 +36,15 @@ public class Controller extends SingleAgent{
         }
     }
     
+    //public 
+    /**
+     * Función encargada de obtener el beneficio de cada casilla.
+     * 
+     * @param i
+     * @param j
+     * @return 
+     * @author Vicente Martínez
+     */
     public double getBenefit(int i, int j){
         if (i == 1 && j == 1)
             return this.scanner[i][j]/this.world[gps.first - 1][gps.second - 1];
@@ -55,6 +64,14 @@ public class Controller extends SingleAgent{
             return this.scanner[i][j]/this.world[gps.first + 1][gps.second + 1];
     }
     
+    /**
+     * Función encargada de establecer la acción elegida y guardar las visitas
+     * realizadas en el mapa "world".
+     * 
+     * @param npos
+     * @return 
+     * @author Vicente Martínez
+     */
     public String nextAction(Pair<Integer, Integer> npos){
         String act= new String();
         
@@ -94,6 +111,12 @@ public class Controller extends SingleAgent{
         return act;
     }
      
+    /**
+     * Función encargada de elegir la mejor acción posible a partir de un 
+     * algorítmo Greedy.
+     * @return 
+     * @author Vicente Martínez
+     */
     public String Heuristic(){
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.maxValue= Double.NEGATIVE_INFINITY;
