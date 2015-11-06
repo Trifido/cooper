@@ -25,6 +25,9 @@ public class Controller extends SingleAgent{
     private double[][] scanner;
     private Pair<Square,Integer>[][] world;
     
+    private ACLMessage out;
+    JsonObject key, answer, msg;
+    
     /**
      * Constructor del Agente Controller.
      * 
@@ -166,9 +169,21 @@ public class Controller extends SingleAgent{
      * @author Rafael Ruiz
      * @param localization Nueva posición para el agente
      */
-    public void sendLocalization(String localization)
+    public void sendAction(String action)
     {
         
+        // Composición del Json de sendLocalization
+        this.msg = Json.object().add( "command", action );
+        this.msg.add( "key", this.key.get( "key" ).asString() );
+        
+        // Creación del ACL
+        this.out = new ACLMessage();
+        this.out.setSender( this.getAid() );
+        this.out.setReceiver( new AgentID( "Furud" ) );
+        
+        this.out.setContent( this.msg.toString() );
+        
+        this.send( out );
     }
     
     /**
