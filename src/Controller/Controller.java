@@ -17,8 +17,15 @@ public class Controller extends SingleAgent{
     private Pair<Integer, Integer> gps;
     private int[][] radar;
     private double[][] scanner;
-    private int[][] world;
+    private Pair<Square,Integer>[][] world;
     
+    /**
+     * Constructor del Agente Controller.
+     * 
+     * @param aid ID del agente para Magentix.
+     * @throws Exception Error en la creación.
+     * @author Alba Rios
+     */
     public Controller(AgentID aid) throws Exception {
         super(aid);
         this.battery = 0;
@@ -26,12 +33,13 @@ public class Controller extends SingleAgent{
         this.gps = new Pair(0,0);
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
-        this.world = new int[500][500];
+        this.world = new Pair[500][500];
         
         // Inicializar el mapa completo a valor "desconocido"
-        for (int[] row : this.world){
-            for (int s : row){
-                s = 1;
+        for (Pair[] row : this.world){
+            for (Pair p : row){
+                p.first = Square.UNKNOWN;
+                p.second = 1;
             }
         }
     }
