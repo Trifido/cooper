@@ -1,19 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Controller;
 
 /**
- *
- * @author Vicente Martínez && Rafael Ruiz
+ * 
+ * Clase Heurística Básica
+ * 
+ * Encargada de establecer la acción elegida
+ * 
+ * @author Vicente Martínez and Rafael Ruiz
+ * 
  */
 public class HeuristicaBasica {
 
     boolean init;
     int fuel;
     String direccion;
+    
+     /**
+     * 
+     * Constructor de la Clase HeuristicaBasica
+     * 
+     * @author Rafael Ruiz
+     * 
+     */
     
     public HeuristicaBasica()
     {
@@ -22,6 +30,16 @@ public class HeuristicaBasica {
         this.direccion = "moveS";
   
     }
+    
+    
+    /**
+     * Función encargada de elegir la mejor acción básica posible.
+     * 
+     * @param radar Mapa del mundo a estudiar
+     * @return 
+     * @author Vicente Martínez
+     * 
+     */
     
     public String EjecutarHeuristica(int[][] radar)
     {
