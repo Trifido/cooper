@@ -8,6 +8,8 @@ import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import GUI.*;
+import javax.swing.JFrame;
 
 /**
  *
@@ -28,6 +30,9 @@ public class Controller extends SingleAgent{
     private ACLMessage out;
     JsonObject key, answer, msg;
     
+    Frame modelMap;
+    JFrame frame;
+    
     /**
      * Constructor del Agente Controller.
      * 
@@ -47,10 +52,19 @@ public class Controller extends SingleAgent{
         // Inicializar el mapa completo a valor "desconocido"
         for (Pair[] row : this.world){
             for (Pair p : row){
-                p.first = Square.UNKNOWN;
-                p.second = 1;
+                
+                p = new Pair( Square.UNKNOWN, 1 );
+                
             }
         }
+        
+        this.frame = new JFrame("Game");
+        this.modelMap = new Frame();
+        this.frame.add( modelMap );
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.pack();
+        this.frame.setVisible(true);
+        
     }
     
     //public 
