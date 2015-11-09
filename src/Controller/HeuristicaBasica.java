@@ -39,15 +39,28 @@ public class HeuristicaBasica {
         {
             return "FOUND";
             
-        }else if(direccion == "moveS" && radar[3][2] == 1)
+        }else if(radar[1][3] == 2)
         {
-            direccion = "moveN";
             
-            return "moveE";
+            return "moveNE";
             
-        }else if(direccion == "moveS" && radar[3][2] == 1)
+        }else if(radar[3][3] == 2)
         {
-            direccion = "moveN";
+            
+            return "moveSE";
+            
+        }else if(radar[1][1] == 2)
+        {
+            
+            return "moveNW";
+            
+        }else if(radar[3][1] == 2)
+        {
+            
+            return "moveSW";
+                        
+        }else if(radar[1][2] == 1 && radar[1][3] == 1) //
+        {
             
             return "moveE";
             
