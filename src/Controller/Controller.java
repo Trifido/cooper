@@ -9,6 +9,7 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import GUI.*;
+import java.awt.Color;
 import javax.swing.JFrame;
 
 /**
@@ -58,12 +59,23 @@ public class Controller extends SingleAgent{
             }
         }
         
+        // Inicializacion de la interfaz:
+        // ------------------------------------------------------------
         this.frame = new JFrame("Game");
-        this.modelMap = new Frame();
+        // Alberto dice: "El frame se debe escalar al modelo del mapa
+        // @see Frame.java
+        this.modelMap = new Frame( 100,100 );
         this.frame.add( modelMap );
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.pack();
         this.frame.setVisible(true);
+        
+        // ------------------
+        // TESTING
+        this.modelMap.specificPaint( 40,40,Color.RED );
+        this.modelMap.specificPaint( 10,10,Color.RED );
+        this.modelMap.specificPaint( 20,25,Color.BLUE );
+        // ------------------
         
     }
     
