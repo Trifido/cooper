@@ -11,9 +11,9 @@ package Controller;
  */
 public class HeuristicaBasica {
 
-    boolean init;
-    int fuel;
-    String direccion;
+    private boolean init;
+    private int fuel;
+    private String direccion;
     
      /**
      * 
