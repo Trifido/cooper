@@ -2,11 +2,16 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelListener;
 
 /**
  * Clase para la generación de la interfaz.
  * V 1.0 - Implementación base.
  * V 1.1 - Mejora y método de pintado específico, eliminación de variables innecesarias.
+ * V 1.2 - Creación del zoom en la interfaz a petición de Vicente (Machaca nº1)
  * 
  * @author Alberto Meana, Alba Ríos
  */
@@ -20,7 +25,7 @@ public class Frame extends JPanel {
     private static Color[][] grid;
     private boolean init = false;
     
-    private static final int SCALE = 5;
+    private static int SCALE = 5;
 
     /**
      * 
@@ -49,6 +54,7 @@ public class Frame extends JPanel {
         }
         
         setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        
     }
     
     /**
@@ -87,6 +93,8 @@ public class Frame extends JPanel {
             }
         }
         
+        this.addMouseListener( new MyMouseListener() );
+        
     }
     
     /**
@@ -104,5 +112,36 @@ public class Frame extends JPanel {
         repaint();
         
     }
+    
+    /**
+     * Clase que implementa el zoom.
+     * Modifica el factor de escala del JPanel y la ventana.
+     * V1.0 de momento funciona on click.
+     * 
+     * @author Alberto Meana
+     */
+    private class MyMouseListener extends MouseAdapter {
 
+        @Override
+        public void mouseClicked( MouseEvent me ) {
+            
+            SCALE = (( SCALE += 1 ) % 5) +1 ;
+            
+            int preferredWidth = NUM_COLUMNS * SCALE;
+            int preferredHeight = NUM_ROWS * SCALE;
+  
+            
+            setSize( new Dimension ( preferredWidth, preferredHeight ));
+            
+            rectWidth = getWidth() / (NUM_COLUMNS * SCALE);
+            rectHeight = getHeight() / (NUM_ROWS * SCALE);
+            
+            specificPaint( 55, 55, Color.YELLOW );
+            
+            
+            
+            repaint();
+            
+        }   
+    }   
 }
