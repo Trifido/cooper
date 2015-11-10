@@ -32,8 +32,7 @@ public class Controller extends SingleAgent{
     private ACLMessage out;
     JsonObject key, answer, msg;
     
-    Frame modelMap;
-    JFrame frame;
+    Interface gui;
     
     /**
      * Constructor del Agente Controller.
@@ -62,21 +61,15 @@ public class Controller extends SingleAgent{
         
         // Inicializacion de la interfaz:
         // ------------------------------------------------------------
-        this.frame = new JFrame("Game");
         // Alberto dice: "El frame se debe escalar al modelo del mapa
-        // @see Frame.java
-        this.modelMap = new Frame( 500,500 );
-        this.frame.add( modelMap );
-        this.frame.setExtendedState( JFrame.MAXIMIZED_BOTH );
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.pack();
-        this.frame.setVisible(true);
+        // @see Frame.java | Interface.java
+        this.gui = new Interface( 500,500 );
         
         // ------------------
         // TESTING
-        this.modelMap.specificPaint( 40,40,Color.RED );
-        this.modelMap.specificPaint( 10,10,Color.RED );
-        this.modelMap.specificPaint( 20,25,Color.BLUE );
+        this.gui.paint( 40,40,Color.RED );
+        this.gui.paint( 10,10,Color.RED );
+        this.gui.paint( 20,25,Color.BLUE );
         // ------------------
         
     }
