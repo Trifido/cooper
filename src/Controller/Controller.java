@@ -217,16 +217,10 @@ public class Controller extends SingleAgent{
      * 
      */
     public void receiveMessage() throws InterruptedException{
-       
+      
        ACLMessage in = new ACLMessage();
        in = this.receiveACLMessage();
        JsonObject message= JsonObject.readFrom(in.getContent());
-       //key=message.get("key").asObject();
-       
-       
-       
-       System.out.println("CLAVE:" + this.key.get( "key" ).asString() );
-       
        battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
        JsonObject gpsObject=message.get("gps").asObject();
        gps.first=(int) gpsObject.getFloat("x",gps.first);
@@ -234,22 +228,21 @@ public class Controller extends SingleAgent{
        JsonArray rad=message.get("radar").asArray();
        int j=0,i2=0;
        for(int i=0;i<rad.size();i++){
-           radar[j][i]=(int)rad.get(i).asFloat();
+           radar[j][i2]=(int)rad.get(i).asFloat();
            i2++;
-           if(i2==4){
+           if(i2==5){
                j++;
                i2=0;
            }
        }
        
-       
        JsonArray scan=message.get("scanner").asArray();
        j=0;
        i2=0;
        for(int i=0;i<scan.size();i++){
-           scanner[j][i]=scan.get(i).asFloat();
+           scanner[j][i2]=scan.get(i).asFloat();
            i2++;
-           if(i2==4){
+           if(i2==5){
                j++;
                i2=0;
            }
@@ -283,6 +276,7 @@ public class Controller extends SingleAgent{
                 System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
                 // Recibo los sensores.
                 receiveMessage();
+                
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }

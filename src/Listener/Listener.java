@@ -201,25 +201,10 @@ public class Listener extends SingleAgent{
             {
                 in = this.receiveACLMessage();
                 System.out.println("\nRecibido mensaje <"+in.getContent());
-                entero = in.getContent();
-                separador = ":";
-                String[] temp;
-                temp = entero.split(separador,2);
-                mensaRecibido.add(temp[0],temp[1]);
-                if (mensajes.isEmpty()){
-                    mensajes.add(mensaRecibido);
-                    contador++;
-                }
-                else{
-                    for (JsonObject json:mensajes)
-                    {
-                        if (!json.get(temp[0]).toString().equals(temp[0]))
-                        {
-                            mensajes.add(mensaRecibido);
-                            contador++;
-                        }
-                    }
-                }
+                mensaRecibido = Json.parse( this.in.getContent() ).asObject();
+           
+                mensajes.add(mensaRecibido);
+                contador++;
             }
             // mensajes.add(key);
             recibidos = true;
