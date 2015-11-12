@@ -204,6 +204,7 @@ public class Listener extends SingleAgent{
                 if(in.getContent().contains("CRASHED"))
                 {
                     endConnection=true;
+                    contador = 0;
                 }
                 else{
                     mensaRecibido = Json.parse( this.in.getContent() ).asObject();
