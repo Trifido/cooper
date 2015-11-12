@@ -207,6 +207,7 @@ public class Listener extends SingleAgent{
             }
             if (contador ==4){
                 recibidos = true;
+                mensajes.add(key);
                 redirectResponses(mensajes);
             }
         } catch (InterruptedException ex) {

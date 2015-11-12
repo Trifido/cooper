@@ -218,6 +218,7 @@ public class Controller extends SingleAgent{
        
        ACLMessage in = this.receiveACLMessage();
        JsonObject message= JsonObject.readFrom(in.getContent());
+       key=message.get("key").asObject();
        battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
        JsonObject gpsObject=message.get("gps").asObject();
        gps.first=(int) gpsObject.getFloat("x",gps.first);
