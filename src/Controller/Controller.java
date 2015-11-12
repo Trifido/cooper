@@ -27,7 +27,7 @@ public class Controller extends SingleAgent{
     private Pair<Integer, Integer> gps;
     private int[][] radar;
     private double[][] scanner;
-    private Pair<Square,Integer>[][] world;
+    private Integer[][] world;
     
     private ACLMessage out;
     JsonObject key, answer, msg;
@@ -50,16 +50,21 @@ public class Controller extends SingleAgent{
         this.gps = new Pair(0,0);
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
-        this.world = new Pair[500][500];
+        this.world = new Integer[500][500];
         
         // Inicializar el mapa completo a valor "desconocido"
-        for (Pair[] row : this.world){
+        /*for (Pair[] row : this.world){
             for (Pair p : row){
                 
                 p = new Pair( Square.UNKNOWN, 1 );
                 
             }
-        }
+        }*/
+        
+        for(int i=0; i<500; i++)
+            for(int j=0; j<500; j++)
+                this.world[i][j]= 1;
+
         
         // Inicializacion de la interfaz:
         // ------------------------------------------------------------
@@ -87,21 +92,21 @@ public class Controller extends SingleAgent{
      */
     public double getBenefit(int i, int j){
         if (i == 1 && j == 1)
-            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second - 1].second;
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second - 1];
         else if (i == 1 && j == 2)
-            return this.scanner[i][j] ;//* this.world[gps.first][gps.second - 1].second;
+            return this.scanner[i][j] * this.world[gps.first][gps.second - 1];
         else if (i == 1 && j == 3) 
-            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second - 1].second;
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second - 1];
         else if (i == 2 && j == 1)
-            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second].second;
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second];
         else if (i == 2 && j == 3)
-            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second].second;
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second];
         else if (i == 3 && j == 1)
-            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second + 1].second;
+            return this.scanner[i][j] * this.world[gps.first - 1][gps.second + 1];
         else if (i == 3 && j == 2)
-            return this.scanner[i][j] ;//* this.world[gps.first][gps.second + 1].second;
+            return this.scanner[i][j] * this.world[gps.first][gps.second + 1];
         else
-            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second + 1].second;
+            return this.scanner[i][j] * this.world[gps.first + 1][gps.second + 1];
     }
     
     /**
@@ -117,35 +122,35 @@ public class Controller extends SingleAgent{
         
         if (npos.first == 1 && npos.second == 1){
             act = "moveNW";
-            //this.world[gps.first - 1][gps.second - 1].second++;
+            this.world[gps.first - 1][gps.second - 1]++;
         }
         else if (npos.first == 1 && npos.second == 2){
             act = "moveN";
-            //this.world[gps.first][gps.second - 1].second++;
+            this.world[gps.first][gps.second - 1]++;
         }
         else if (npos.first == 1 && npos.second == 3){
             act = "moveNE";
-            //this.world[gps.first + 1][gps.second - 1].second++;
+            this.world[gps.first + 1][gps.second - 1]++;
         }
         else if (npos.first == 2 && npos.second == 1){
             act = "moveW";
-            //this.world[gps.first - 1][gps.second].second++;
+            this.world[gps.first - 1][gps.second]++;
         }
         else if (npos.first == 2 && npos.second == 3){
             act = "moveE";
-            //this.world[gps.first + 1][gps.second].second++;
+            this.world[gps.first + 1][gps.second]++;
         }
         else if (npos.first == 3 && npos.second == 1){
             act = "moveSW";
-            //this.world[gps.first - 1][gps.second + 1].second++;
+            this.world[gps.first - 1][gps.second + 1]++;
         }
         else if (npos.first == 3 && npos.second == 2){
             act = "moveS";
-            //this.world[gps.first][gps.second + 1].second++;
+            this.world[gps.first][gps.second + 1]++;
         }
         else{
             act = "moveSE";
-            //this.world[gps.first + 1][gps.second + 1].second++;
+            this.world[gps.first + 1][gps.second + 1]++;
         }
         
         return act;
@@ -188,7 +193,6 @@ public class Controller extends SingleAgent{
             for(int i=1; i<4; i++){
                 for(int j=1; j<4; j++){
                     if((i!=2 || j!=2) && radar[i][j] != 1){ 
-                        System.out.println("ESPACIO en ["+i+"]["+j+"]");
                         benefit= getBenefit(i, j);
                         if(this.minValue > benefit){
                             this.minValue= benefit;
@@ -196,13 +200,10 @@ public class Controller extends SingleAgent{
                             newpos.second= j;
                         }
                     }
-                    else {//if(i!=2 || j!=2){
+                    else {
                         System.out.println("OBSTACULO en ["+i+"]["+j+"]");
-                        //world[i][j].second= -1;
+                        world[i][j]= -1;
                     }
-                    /*else if(i==2 && j==2){
-                        System.out.println("NOP -> ["+i+"]["+j+"]");
-                    }*/
                 }
             }
             return nextAction(newpos);
@@ -288,19 +289,42 @@ public class Controller extends SingleAgent{
         //JsonObject message= JsonObject.readFrom(in.getContent());
         //key=message.get("result").asObject(); 
         
-        this.key = Json.parse( in.getContent() ).asObject();
+        this.key = Json.parse( in.getContent() ).asObject(); 
         
     }
     
+    /**
+     * Recibir el check de continuar o finalizar la ejecución.
+     * @author Vicente Martínez
+     */
+    private boolean receiveCheck() throws InterruptedException{
+        ACLMessage check = new ACLMessage();
+        check = this.receiveACLMessage();
+        
+        JsonObject message= JsonObject.readFrom(check.getContent());
+        String var= message.get("check").asString();
+        
+        if(var.equals("continue"))
+            return false;
+        else
+            return true;
+    }
+    
+    
     @Override
     public void execute(){
-            
+        boolean fin= false;
+        
+        while(!fin){ 
             try {
                 // Recojo la Key y la guardo.
                 this.receiveKey();
                 System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
+                fin= this.receiveCheck();
+                System.out.println( "Ha funcionado el check en el controller! " );
                 // Recibo los sensores.
-                receiveMessage();
+                if(!fin)
+                    receiveMessage();
                 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -314,6 +338,6 @@ public class Controller extends SingleAgent{
             
             
             System.out.println( "Ha funcionado el controller! " ); 
-            
+        }
     }
 }

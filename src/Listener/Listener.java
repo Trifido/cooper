@@ -89,7 +89,7 @@ public class Listener extends SingleAgent{
         while( !this.endConnection )
             escucharMensajes();
         
-        
+        sendCheck("finish");
         
 
         // Deslogear
@@ -189,6 +189,25 @@ public class Listener extends SingleAgent{
         
         this.send(out);
     }
+    
+    
+    /**
+     * Metodo para enviar comprobaciones ante choques y finalización.
+     * @author Vicente Martínez
+     */
+    private void sendCheck(String var){
+        JsonObject check=new JsonObject();
+        
+        check.add("check", var);
+        
+        ACLMessage out = new ACLMessage();
+        out.setSender(this.getAid());
+        out.setReceiver(new AgentID(controllerName));
+        out.setContent(check.toString());
+        
+        this.send(out);
+    }
+    
     /**
      * Función para escuchar los mensajes y guardarlos en un Array de JsonObject 
      * 
@@ -203,12 +222,8 @@ public class Listener extends SingleAgent{
                 
                 in = this.receiveACLMessage();
                 System.out.println("\nRecibido mensaje <"+in.getContent());
+                
                 if(in.getContent().contains("CRASHED"))
-                {
-                    endConnection=true;
-                    contador = 0;
-                }
-                else if(in.getContent().contains("CRASHED"))
                 {
                     endConnection=true;
                     contador = 0;
@@ -222,9 +237,13 @@ public class Listener extends SingleAgent{
             if(!endConnection)
             { 
                 // mensajes.add(key);
+                sendCheck("continue");
                 recibidos = true;
                 redirectResponses(mensajes);
                 contador = 0;
+            }
+            else{
+                //sendCheck("finish");
             }
             
         } catch (InterruptedException ex) {
