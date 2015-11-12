@@ -87,21 +87,21 @@ public class Controller extends SingleAgent{
      */
     public double getBenefit(int i, int j){
         if (i == 1 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second - 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second - 1].second;
         else if (i == 1 && j == 2)
-            return this.scanner[i][j] * this.world[gps.first][gps.second - 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first][gps.second - 1].second;
         else if (i == 1 && j == 3) 
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second - 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second - 1].second;
         else if (i == 2 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second].second;
+            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second].second;
         else if (i == 2 && j == 3)
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second].second;
+            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second].second;
         else if (i == 3 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second + 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first - 1][gps.second + 1].second;
         else if (i == 3 && j == 2)
-            return this.scanner[i][j] * this.world[gps.first][gps.second + 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first][gps.second + 1].second;
         else
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second + 1].second;
+            return this.scanner[i][j] ;//* this.world[gps.first + 1][gps.second + 1].second;
     }
     
     /**
@@ -117,40 +117,49 @@ public class Controller extends SingleAgent{
         
         if (npos.first == 1 && npos.second == 1){
             act = "moveNW";
-            this.world[gps.first - 1][gps.second - 1].second++;
+            //this.world[gps.first - 1][gps.second - 1].second++;
         }
         else if (npos.first == 1 && npos.second == 2){
             act = "moveN";
-            this.world[gps.first][gps.second - 1].second++;
+            //this.world[gps.first][gps.second - 1].second++;
         }
         else if (npos.first == 1 && npos.second == 3){
             act = "moveNE";
-            this.world[gps.first + 1][gps.second - 1].second++;
+            //this.world[gps.first + 1][gps.second - 1].second++;
         }
         else if (npos.first == 2 && npos.second == 1){
             act = "moveW";
-            this.world[gps.first - 1][gps.second].second++;
+            //this.world[gps.first - 1][gps.second].second++;
         }
         else if (npos.first == 2 && npos.second == 3){
             act = "moveE";
-            this.world[gps.first + 1][gps.second].second++;
+            //this.world[gps.first + 1][gps.second].second++;
         }
         else if (npos.first == 3 && npos.second == 1){
             act = "moveSW";
-            this.world[gps.first - 1][gps.second + 1].second++;
+            //this.world[gps.first - 1][gps.second + 1].second++;
         }
         else if (npos.first == 3 && npos.second == 2){
             act = "moveS";
-            this.world[gps.first][gps.second + 1].second++;
+            //this.world[gps.first][gps.second + 1].second++;
         }
         else{
             act = "moveSE";
-            this.world[gps.first + 1][gps.second + 1].second++;
+            //this.world[gps.first + 1][gps.second + 1].second++;
         }
         
         return act;
     }
      
+    public void mostrarRadar(){
+        for(int i=1; i<4; i++){
+            for(int j=1; j<4; j++){
+                System.out.print(radar[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+    
     /**
      * Función encargada de elegir la mejor acción posible a partir de un 
      * algorítmo Greedy.
@@ -158,22 +167,28 @@ public class Controller extends SingleAgent{
      * @author Vicente Martínez
      */
     public String Heuristic(){
-        if(true)
-            return "moveS";
+        //if(true)
+        //    return "moveS";
         
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
         double benefit;
         
-        if(this.battery < 2)
+        if(this.battery < 2){
+            System.out.println("REFUEL");
             return "REFUEL";
+        }
         //Si el bot está sobre la casilla 2 (objetivo), fin
-        if(this.radar[2][2] == 2)
+        if(this.radar[2][2] == 2){
+            System.out.println("FOUND");
             return "FOUND";
+        }
         else{
-            for(int i=1; i<4; i++)
-                for(int j=1; j<4; j++)
-                    if((i!=2 && j!= 2) && radar[i][j] != 1){ 
+            mostrarRadar();
+            for(int i=1; i<4; i++){
+                for(int j=1; j<4; j++){
+                    if((i!=2 || j!=2) && radar[i][j] != 1){ 
+                        System.out.println("ESPACIO en ["+i+"]["+j+"]");
                         benefit= getBenefit(i, j);
                         if(this.minValue > benefit){
                             this.minValue= benefit;
@@ -181,10 +196,15 @@ public class Controller extends SingleAgent{
                             newpos.second= j;
                         }
                     }
-                    else if(i!=2 && j!= 2){
-                        world[i][j].second= -1;
+                    else {//if(i!=2 || j!=2){
+                        System.out.println("OBSTACULO en ["+i+"]["+j+"]");
+                        //world[i][j].second= -1;
                     }
-            
+                    /*else if(i==2 && j==2){
+                        System.out.println("NOP -> ["+i+"]["+j+"]");
+                    }*/
+                }
+            }
             return nextAction(newpos);
         }
     }
