@@ -205,9 +205,11 @@ public class Listener extends SingleAgent{
                 {
                     endConnection=true;
                 }
-                mensaRecibido = Json.parse( this.in.getContent() ).asObject();
-                mensajes.add(mensaRecibido);
-                contador++;
+                else{
+                    mensaRecibido = Json.parse( this.in.getContent() ).asObject();
+                    mensajes.add(mensaRecibido);
+                    contador++;
+                }
             }
             if(!endConnection)
             { 
