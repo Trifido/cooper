@@ -221,7 +221,9 @@ public class Controller extends SingleAgent{
        ACLMessage in = new ACLMessage();
        in = this.receiveACLMessage();
        JsonObject message= JsonObject.readFrom(in.getContent());
-       key=message.get("key").asObject();
+       //key=message.get("key").asObject();
+       
+       
        
        System.out.println("CLAVE:" + this.key.get( "key" ).asString() );
        
@@ -261,25 +263,38 @@ public class Controller extends SingleAgent{
      * 
      */
     private void receiveKey() throws InterruptedException{
-       ACLMessage in = this.receiveACLMessage();
-       JsonObject message= JsonObject.readFrom(in.getContent());
-       key=message.get("result").asObject(); 
+       
+        ACLMessage in = new ACLMessage();
+        in = this.receiveACLMessage();
+        
+        //JsonObject message= JsonObject.readFrom(in.getContent());
+        //key=message.get("result").asObject(); 
+        
+        this.key = Json.parse( in.getContent() ).asObject();
+        
     }
     
     @Override
     public void execute(){
-        try {
-            receiveMessage();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        String aux = Heuristic();
-        
-        System.out.println("ACTION: " + aux);
-        
-        sendAction(aux);
-        
+            
+            try {
+                // Recojo la Key y la guardo.
+                this.receiveKey();
+                System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
+                // Recibo los sensores.
+                receiveMessage();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            /*
+            String aux = Heuristic();
+            
+            System.out.println("ACTION: " + aux);
+            
+            sendAction(aux);
+            */
+            
+            System.out.println( "Ha funcionado el controller! " ); 
+            
     }
-    
 }

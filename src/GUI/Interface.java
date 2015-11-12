@@ -33,7 +33,7 @@ public class Interface extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         
-        this.setVisible(true);
+        //this.setVisible(true);
         
         this.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {

@@ -16,14 +16,15 @@ import java.util.logging.*;
  */
 public class Listener extends SingleAgent{
     //Listener (this) agent name
-    private String listenerName="Listener";
+    private String listenerName="Listenerr";
     //Controller name
-    private String controllerName="Controller";
+    private String controllerName="Controllerrr";
     private ACLMessage result, in, out;
     JsonObject key, answer, msg, mensaRecibido;
     ArrayList <JsonObject> mensajes;
     int contador = 0;
     boolean recibidos = false;
+    boolean endConnection = false;
     
     /**
      * Constructor del agente Listener
@@ -79,7 +80,18 @@ public class Listener extends SingleAgent{
         // Imprimir result por consola para ver la key o el BAD_*
         this.key = Json.parse( this.result.getContent() ).asObject();
         System.out.println( this.key.get( "result" ) );
+        
+        // Mandar key al controller.
         sendKey(this.key);
+        
+        
+        // Escuchar sensores y enviar resultados
+        //while( !this.endConnection )
+            escucharMensajes();
+        
+        
+        
+
         // Deslogear
             /*  IMPORTANTISIMO EN LOS PARSINGS DE JSON  */
         /* toString() == "blabla" <-- ojo comillas!!    */
@@ -119,6 +131,10 @@ public class Listener extends SingleAgent{
         //Composición de Json de logeo.
         JsonObject msg = Json.object().add( "command","login" );
         msg.add( "world","map1" );
+        msg.add( "radar", this.listenerName );
+        msg.add( "scanner", this.listenerName );
+        msg.add( "battery", this.listenerName );
+        msg.add( "gps", this.listenerName );
         /* ... Poner sensores y tal ... */
         
         // Creación del ACL
@@ -178,13 +194,13 @@ public class Listener extends SingleAgent{
      * 
      * @author Nikolai González
      */
-    private void EscucharMensajes(){
+    private void escucharMensajes(){
         String entero, separador;
         try {
-            while(contador <=4)
+            while( contador < 4 )
             {
                 in = this.receiveACLMessage();
-                //System.out.println("\nRecibido mensaje <"+in.getContent());
+                System.out.println("\nRecibido mensaje <"+in.getContent());
                 entero = in.getContent();
                 separador = ":";
                 String[] temp;
@@ -205,11 +221,11 @@ public class Listener extends SingleAgent{
                     }
                 }
             }
-            if (contador ==4){
-                recibidos = true;
-                mensajes.add(key);
-                redirectResponses(mensajes);
-            }
+            // mensajes.add(key);
+            recibidos = true;
+            redirectResponses(mensajes);
+            contador = 0;
+
         } catch (InterruptedException ex) {
             System.out.println("Fallo en la recepción de mensajes.");
             //si da error se desloguea???
@@ -225,7 +241,9 @@ public class Listener extends SingleAgent{
      * @param key clave de conexión
      */
     private void sendKey(JsonObject key){
+        
         ACLMessage out = new ACLMessage();
+        
         out.setSender(this.getAid());
         out.setReceiver(new AgentID(controllerName));
         out.setContent(key.toString());
