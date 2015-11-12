@@ -197,20 +197,26 @@ public class Listener extends SingleAgent{
     private void escucharMensajes(){
         String entero, separador;
         try {
-            while( contador < 4 )
+            while( (contador < 4) && !endConnection )
             {
                 in = this.receiveACLMessage();
                 System.out.println("\nRecibido mensaje <"+in.getContent());
+                if(in.getContent().contains("CRASHED"))
+                {
+                    endConnection=true;
+                }
                 mensaRecibido = Json.parse( this.in.getContent() ).asObject();
-           
                 mensajes.add(mensaRecibido);
                 contador++;
             }
-            // mensajes.add(key);
-            recibidos = true;
-            redirectResponses(mensajes);
-            contador = 0;
-
+            if(!endConnection)
+            { 
+                // mensajes.add(key);
+                recibidos = true;
+                redirectResponses(mensajes);
+                contador = 0;
+            }
+            
         } catch (InterruptedException ex) {
             System.out.println("Fallo en la recepción de mensajes.");
             //si da error se desloguea???
