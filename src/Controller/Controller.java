@@ -253,6 +253,18 @@ public class Controller extends SingleAgent{
            }
        }
     }
+    /**
+     * Espera a la recepción de un objeto JSON del listener
+     * 
+     * @author Andrés Ortiz
+     * @throws java.lang.InterruptedException
+     * 
+     */
+    private void receiveKey() throws InterruptedException{
+       ACLMessage in = this.receiveACLMessage();
+       JsonObject message= JsonObject.readFrom(in.getContent());
+       key=message.get("result").asObject(); 
+    }
     
     @Override
     public void execute(){

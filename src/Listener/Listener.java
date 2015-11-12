@@ -79,7 +79,7 @@ public class Listener extends SingleAgent{
         // Imprimir result por consola para ver la key o el BAD_*
         this.key = Json.parse( this.result.getContent() ).asObject();
         System.out.println( this.key.get( "result" ) );
-        
+        sendKey(this.key);
         // Deslogear
             /*  IMPORTANTISIMO EN LOS PARSINGS DE JSON  */
         /* toString() == "blabla" <-- ojo comillas!!    */
@@ -216,7 +216,21 @@ public class Listener extends SingleAgent{
             //logout( this.key.get( "result" ).asString() );
         }
         
-        
-        
     }
+    
+     /**
+     * Envia la key a controller
+     * 
+     * @author Andrés Ortiz
+     * @param key clave de conexión
+     */
+    private void sendKey(JsonObject key){
+        ACLMessage out = new ACLMessage();
+        out.setSender(this.getAid());
+        out.setReceiver(new AgentID(controllerName));
+        out.setContent(key.toString());
+        
+        this.send(out);
+    }
+    
 }
