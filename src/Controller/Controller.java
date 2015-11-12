@@ -44,6 +44,8 @@ public class Controller extends SingleAgent{
     public Controller(AgentID aid) throws Exception {
         super(aid);
         this.battery = 0;
+        this.msg= new JsonObject();
+        this.key= new JsonObject();
         this.minValue= Double.NEGATIVE_INFINITY;
         this.gps = new Pair(0,0);
         this.radar = new int[5][5];
@@ -156,6 +158,9 @@ public class Controller extends SingleAgent{
      * @author Vicente Martínez
      */
     public String Heuristic(){
+        if(true)
+            return "moveS";
+        
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
         double benefit;
@@ -192,10 +197,11 @@ public class Controller extends SingleAgent{
      */
     public void sendAction(String action)
     {
-        
         // Composición del Json de sendLocalization
+        System.out.println("Key: " + this.key.get( "result" ).toString());
+        
         this.msg = Json.object().add( "command", action );
-        this.msg.add( "key", this.key.get( "key" ).asString() );
+        this.msg.add( "key", this.key.get( "result" ).asString() );
         
        
         
@@ -256,10 +262,9 @@ public class Controller extends SingleAgent{
      * 
      */
     private void receiveKey() throws InterruptedException{
-       
+        
         ACLMessage in = new ACLMessage();
         in = this.receiveACLMessage();
-        
         //JsonObject message= JsonObject.readFrom(in.getContent());
         //key=message.get("result").asObject(); 
         
@@ -280,13 +285,13 @@ public class Controller extends SingleAgent{
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-            /*
+            
             String aux = Heuristic();
             
             System.out.println("ACTION: " + aux);
             
             sendAction(aux);
-            */
+            
             
             System.out.println( "Ha funcionado el controller! " ); 
             

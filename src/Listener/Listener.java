@@ -16,9 +16,9 @@ import java.util.logging.*;
  */
 public class Listener extends SingleAgent{
     //Listener (this) agent name
-    private String listenerName="Listenerr";
+    private String listenerName="Listenerr1";
     //Controller name
-    private String controllerName="Controllerrr";
+    private String controllerName="Controllerr1";
     private ACLMessage result, in, out;
     JsonObject key, answer, msg, mensaRecibido;
     ArrayList <JsonObject> mensajes;
@@ -86,7 +86,7 @@ public class Listener extends SingleAgent{
         
         
         // Escuchar sensores y enviar resultados
-        //while( !this.endConnection )
+        while( !this.endConnection )
             escucharMensajes();
         
         
@@ -197,11 +197,18 @@ public class Listener extends SingleAgent{
     private void escucharMensajes(){
         String entero, separador;
         try {
+            //System.out.println("Contador: " + contador);
             while( (contador < 4) && !endConnection )
             {
+                
                 in = this.receiveACLMessage();
                 System.out.println("\nRecibido mensaje <"+in.getContent());
                 if(in.getContent().contains("CRASHED"))
+                {
+                    endConnection=true;
+                    contador = 0;
+                }
+                else if(in.getContent().contains("CRASHED"))
                 {
                     endConnection=true;
                     contador = 0;
@@ -223,7 +230,7 @@ public class Listener extends SingleAgent{
         } catch (InterruptedException ex) {
             System.out.println("Fallo en la recepción de mensajes.");
             //si da error se desloguea???
-            //logout( this.key.get( "result" ).asString() );
+            logout( this.key.get( "result" ).asString() );
         }
         
     }

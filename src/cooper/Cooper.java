@@ -23,8 +23,8 @@ public class Cooper {
     public static void main(String[] args) throws Exception {
         
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Canmaior", "Ishiguro", false);
-        Listener listener = new Listener( new AgentID( "Listenerr" ) );
-        Controller controller = new Controller( new AgentID( "Controllerrr" ) );
+        Listener listener = new Listener( new AgentID( "Listenerr1" ) );
+        Controller controller = new Controller( new AgentID( "Controllerr1" ) );
          
         listener.start();
         controller.start();
