@@ -197,6 +197,8 @@ public class Controller extends SingleAgent{
         this.msg = Json.object().add( "command", action );
         this.msg.add( "key", this.key.get( "key" ).asString() );
         
+       
+        
         // Creación del ACL
         this.out = new ACLMessage();
         this.out.setSender( this.getAid() );
@@ -216,9 +218,13 @@ public class Controller extends SingleAgent{
      */
     public void receiveMessage() throws InterruptedException{
        
-       ACLMessage in = this.receiveACLMessage();
+       ACLMessage in = new ACLMessage();
+       in = this.receiveACLMessage();
        JsonObject message= JsonObject.readFrom(in.getContent());
        key=message.get("key").asObject();
+       
+       System.out.println("CLAVE:" + this.key.get( "key" ).asString() );
+       
        battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
        JsonObject gpsObject=message.get("gps").asObject();
        gps.first=(int) gpsObject.getFloat("x",gps.first);
@@ -250,6 +256,17 @@ public class Controller extends SingleAgent{
     
     @Override
     public void execute(){
+        try {
+            receiveMessage();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        String aux = Heuristic();
+        
+        System.out.println("ACTION: " + aux);
+        
+        sendAction(aux);
         
     }
     
