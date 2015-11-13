@@ -186,7 +186,7 @@ public class Listener extends SingleAgent{
                 in = this.receiveACLMessage();
                 //System.out.println("\nRecibido mensaje <"+in.getContent());
                 
-                if(in.getContent().contains("CRASHED"))
+                if((in.getContent().contains("CRASHED")) || (in.getContent().contains("FOUND")))
                 {
                     endConnection=true;
                     contador = 0;
