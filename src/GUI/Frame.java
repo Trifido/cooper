@@ -2,10 +2,6 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelListener;
 
 /**
  * Clase para la generación de la interfaz.
@@ -17,15 +13,15 @@ import java.awt.event.MouseWheelListener;
  */
 public class Frame extends JPanel {
 
-    private static int NUM_ROWS;
-    private static int NUM_COLUMNS;
-    private static int rectWidth;
-    private static int rectHeight;
+    private int NUM_ROWS;
+    private int NUM_COLUMNS;
+    private int rectWidth;
+    private int rectHeight;
     
-    private static Color[][] grid;
+    private Color[][] grid;
     private boolean init = false;
     
-    private static int SCALE = 5;
+    private int SCALE = 5;
 
     /**
      * 
@@ -33,6 +29,8 @@ public class Frame extends JPanel {
      * Inicializa los parámetros y el grid a blanco.
      * 
      * @author Alberto Meana, Alba Ríos
+     * @param rows Filas del grid
+     * @param columns Columnas del grid
      */
     public Frame( int rows, int columns ){
         
@@ -72,13 +70,13 @@ public class Frame extends JPanel {
         // Borrado y config del grid
         if( !this.init ){
             
-            g.clearRect(0, 0, getWidth(), getHeight());
+            g.clearRect(0, 0, this.getWidth(), this.getHeight());
             this.init = true;
         
         }
         
-        this.rectWidth = getWidth() / this.NUM_COLUMNS;
-        this.rectHeight = getHeight() / this.NUM_ROWS;
+        this.rectWidth = this.getWidth() / this.NUM_COLUMNS;
+        this.rectHeight = this.getHeight() / this.NUM_ROWS;
         
         // Pintado del grid segun lo que ponga en "grid"
         for (int i = 0; i < NUM_ROWS; i++) {
@@ -106,8 +104,7 @@ public class Frame extends JPanel {
     public void specificPaint( int coordinateX, int coordinateY, Color color ){
         
         this.grid[coordinateX][coordinateY] = color;
-        
         repaint();
-        
+            
     }
 }

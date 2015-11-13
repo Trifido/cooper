@@ -14,15 +14,14 @@ import java.util.ArrayList;
  * @author Alberto Meana, Andrés Ortiz, Nikolai González
  */
 public class Listener extends SingleAgent{
-    //Listener (this) agent name
+
     private String listenerName;
-    //Controller name
     private String controllerName;
     private ACLMessage result, in, out;
-    JsonObject key, answer, msg, mensaRecibido;
-    ArrayList <JsonObject> mensajes;
-    int contador;
-    boolean recibidos;
+    JsonObject key, answer, msg, messageReceived;
+    ArrayList <JsonObject> messages;
+    int cont;
+    boolean received;
     boolean endConnection;
     
     /**
@@ -35,17 +34,18 @@ public class Listener extends SingleAgent{
     public Listener( AgentID aid, String listenerName, String controllerName ) throws Exception {
         
         super(aid);
-        this.contador = 0;
+        this.cont = 0;
         this.result = new ACLMessage();
         this.in = new ACLMessage();
         this.out = new ACLMessage();
         this.key = new JsonObject();
         this.answer = new JsonObject();
         this.msg = new JsonObject();
-        this.mensajes = new ArrayList();
+        this.messageReceived = new JsonObject();
+        this.messages = new ArrayList();
         this.listenerName = listenerName;
         this.controllerName = controllerName;
-        this.recibidos = false;
+        this.received = false;
         this.endConnection = false;
         
     }
@@ -63,8 +63,10 @@ public class Listener extends SingleAgent{
         // INIT EXECUTION LISTENER
         
         while( !this.endConnection ){
+            
             System.out.println( "LISTENER: Escuchando...");
-            escucharMensajes();
+            this.hearMessages();
+        
         }
         
         // MATAR AL LISTENER!!!
@@ -94,52 +96,34 @@ public class Listener extends SingleAgent{
         this.send(out);
     }
     
-    
-    /**
-     * Metodo para enviar comprobaciones ante choques y finalización.
-     * @author Vicente Martínez
-     */
-    private void sendCheck(String var){
-        JsonObject check=new JsonObject();
-        
-        check.add("check", var);
-        
-        ACLMessage out = new ACLMessage();
-        out.setSender(this.getAid());
-        out.setReceiver(new AgentID(controllerName));
-        out.setContent(check.toString());
-        
-        this.send(out);
-    }
-    
     /**
      * Función para escuchar los mensajes y guardarlos en un Array de JsonObject 
      * 
      * @author Nikolai González
      */
-    private void escucharMensajes(){
+    private void hearMessages(){
 
         try {
-            while( (contador < 4) && !endConnection )
+            while( ( this.cont < 4) && !endConnection )
             {
                 in = this.receiveACLMessage();
                 
                 if((in.getContent().contains("CRASHED")) || (in.getContent().contains("FOUND")))
                 {
                     endConnection=true;
-                    contador = 0;
+                    this.cont = 0;
                 }
                 else{
-                    mensaRecibido = Json.parse( this.in.getContent() ).asObject();
-                    mensajes.add(mensaRecibido);
-                    contador++;
+                    this.messageReceived = Json.parse( this.in.getContent() ).asObject();
+                    this.messages.add(this.messageReceived);
+                    this.cont++;
                 }
             }
             if(!endConnection)
             { 
-                recibidos = true;
-                redirectResponses(mensajes);
-                contador = 0;
+                this.received = true;
+                this.redirectResponses(this.messages);
+                this.cont = 0;
             }
             else{
                 //sendCheck("finish");

@@ -1,7 +1,6 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import javax.swing.JFrame;
 
 /**
@@ -22,6 +21,8 @@ public class Interface extends JFrame {
      * Inicializa el grid interior y la interfaz.
      * 
      * @author Alberto Meana
+     * @param x Numero de columnas del grid
+     * @param y Numero de filas del grid
      */
     public Interface( int x, int y ){
     
@@ -47,9 +48,9 @@ public class Interface extends JFrame {
     /**
      * Método que colorea una casilla del grid interior
      * 
-     * @param coordinateX Coordenada x del grid
-     * @param coordinateY Coordenada y del grid
-     * @param color Color al que pintar la casilla
+     * @param x Coordenada x del grid
+     * @param y Coordenada y del grid
+     * @param c Color al que pintar la casilla
      * @author Alberto Meana
      */
     public void paint( int x, int y, Color c ){

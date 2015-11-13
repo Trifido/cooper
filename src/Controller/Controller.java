@@ -10,13 +10,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import GUI.*;
 import java.awt.Color;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 /**
  *
  * Clase Controller
  * Recibe mensajes del agente Listener y realiza la toma de decisiones
  * 
- * @author Alba Ríos and Vicente Martínez
+ * @author Alba Ríos, Vicente Martínez, Alberto Meana
  */
 public class Controller extends SingleAgent{
     
@@ -28,12 +30,14 @@ public class Controller extends SingleAgent{
     private Integer[][] world;
     private String listenerName;
     private String controllerName;
+    private String worldToSolve;
     
     private ACLMessage out;
     private ACLMessage result;
-    JsonObject key, answer, msg;
+    private JsonObject key, answer, msg;
     
-    Interface gui;
+    public Interface gui;
+    public WorldDialog ask;
     
     /**
      * Constructor del Agente Controller.
@@ -73,26 +77,27 @@ public class Controller extends SingleAgent{
             for(int j=0; j<500; j++)
                 this.world[i][j]= 1;
 
-        
+       
+        this.worldToSolve = "map" + (new WorldDialog( new JFrame(), true) ).getWordl();
+        System.out.println( worldToSolve );
         // Inicializacion de la interfaz:
         // ------------------------------------------------------------
-        // Alberto dice: "El frame se debe escalar al modelo del mapa
+        // Alberto dice: "El frame se debe escalar al modelo del mapa"
         // @see Frame.java | Interface.java
         this.gui = new Interface( 500,500 );
         
     }
     
-    //public 
-    
     /**
      * Función para logearse en el sistema con el controlador
+     * 
      * @author Alberto Meana
      */
     private void login(){
     
         //Composición de Json de logeo.
         this.msg = Json.object().add( "command","login" );
-        this.msg.add( "world","map3" );
+        this.msg.add( "world" ,this.worldToSolve );
         this.msg.add( "radar", this.listenerName );
         this.msg.add( "scanner", this.listenerName );
         this.msg.add( "battery", this.listenerName );
@@ -175,76 +180,85 @@ public class Controller extends SingleAgent{
         
         if (npos.first == 1 && npos.second == 1){
             act = "moveNW";
-            this.world[gps.first - 1][gps.second - 1]++;
+            this.world[this.gps.first - 1][this.gps.second - 1]++;
         }
         else if (npos.first == 1 && npos.second == 2){
             act = "moveN";
-            this.world[gps.first][gps.second - 1]++;
+            this.world[this.gps.first][this.gps.second - 1]++;
         }
         else if (npos.first == 1 && npos.second == 3){
             act = "moveNE";
-            this.world[gps.first + 1][gps.second - 1]++;
+            this.world[this.gps.first + 1][this.gps.second - 1]++;
         }
         else if (npos.first == 2 && npos.second == 1){
             act = "moveW";
-            this.world[gps.first - 1][gps.second]++;
+            this.world[this.gps.first - 1][this.gps.second]++;
         }
         else if (npos.first == 2 && npos.second == 3){
             act = "moveE";
-            this.world[gps.first + 1][gps.second]++;
+            this.world[this.gps.first + 1][this.gps.second]++;
         }
         else if (npos.first == 3 && npos.second == 1){
             act = "moveSW";
-            this.world[gps.first - 1][gps.second + 1]++;
+            this.world[this.gps.first - 1][this.gps.second + 1]++;
         }
         else if (npos.first == 3 && npos.second == 2){
             act = "moveS";
-            this.world[gps.first][gps.second + 1]++;
+            this.world[this.gps.first][this.gps.second + 1]++;
         }
         else{
             act = "moveSE";
-            this.world[gps.first + 1][gps.second + 1]++;
+            this.world[this.gps.first + 1][this.gps.second + 1]++;
         }
         
         return act;
     }
     
     /**
-     * (Alberto): Añadiendo pintado en interfaz.
+     * Pintado en interfaz.
      * 
-     * ROJO = vacio
+     * ROJO = Vacio
      * NEGRO = Pared
-     * Verde = Objetivo
+     * VERDE = Objetivo
+     * BLUE = Bot
      * 
      * ( POR IMPLEMENTAR : EL BOT )
      * 
      * @author Alberto Meana
      */
-    public void mostrarRadar(){
-        for(int i=1; i<4; i++){
-            for(int j=1; j<4; j++){
-                System.out.print( "CONTROLLER: " + radar[i][j] + " ");
-                
-                // comprobacion de out of bounds
-                if( (this.gps.first - ( i-2 ) ) >= 0 && ( this.gps.second - ( j-2 ) ) >= 0 ){
-                    // Color dependiendo de lo k haya en radar.
+    public void paint(){
+        
+        for( int i = 0; i < 5; i++ ){
+            for( int j = 0; j < 5; j++ ){
+            
+                if( this.gps.first + ( i-2 ) >= 0 && this.gps.second + ( j-2 ) >= 0 && this.gps.first + ( i-2 ) < 500 && this.gps.second + ( j-2 ) < 500 ){
                     switch( this.radar[i][j] ){
 
                         case 0:
-                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.red );
+                            this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.RED );
                             break;
                         case 1:
-                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.BLACK );
+                            this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.BLACK );
                             break;
-                        case 2:
-                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.GREEN );
-                            break;
+                        case 2:    
+                            if( i == 2 && j == 2 ){
 
+                                this.gui.paint( this.gps.first, this.gps.second, Color.ORANGE );
+
+                            }else{
+
+                                this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.GREEN );
+
+                            }
+                            break;
                     }
                 }
             }
-            System.out.println();
         }
+        // El bot
+        if( this.radar[2][2] != 2 )
+            this.gui.paint( this.gps.first, this.gps.second, Color.BLUE );
+        
     }
     
     /**
@@ -253,9 +267,9 @@ public class Controller extends SingleAgent{
      * @return 
      * @author Vicente Martínez
      */
-    public String Heuristic(){
-        //if(true)
-        //    return "moveS";
+    public String heuristic(){
+        
+        this.paint();
         
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
@@ -271,10 +285,9 @@ public class Controller extends SingleAgent{
             return "found";
         }
         else{
-            mostrarRadar();
             for(int i=1; i<4; i++){
                 for(int j=1; j<4; j++){
-                    if((i!=2 || j!=2) && radar[i][j] != 1){ 
+                    if((i!=2 || j!=2) && this.radar[i][j] != 1){ 
                         benefit= getBenefit(i, j);
                         if(this.minValue > benefit){
                             this.minValue= benefit;
@@ -284,7 +297,7 @@ public class Controller extends SingleAgent{
                     }
                     else if (i!=2 || j!=2){
                         System.out.println("CONTROLLER: OBSTACULO en ["+i+"]["+j+"]");
-                        world[i][j]= -1;
+                        this.world[i][j]= -1;
                     }
                 }
             }
@@ -300,28 +313,28 @@ public class Controller extends SingleAgent{
      */
     public void sendAction(String action)
     {
-        // Composición del Json de sendLocalization
         
+        // Composición del Json de sendLocalization
+
         this.msg = Json.object().add( "command", action );
         this.msg.add( "key", this.key.get( "result" ).asString() );
-        
-       
-        
+
         // Creación del ACL
         this.out = new ACLMessage();
         this.out.setSender( this.getAid() );
         this.out.setReceiver( new AgentID( "Furud" ) );
-        
+
         this.out.setContent( this.msg.toString() );
-        
+
         this.send( out );
-        
+
         try {
             this.out = receiveACLMessage();
         } catch (InterruptedException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println( "CONTROLLER: " + out.getContent().toString() );
+        System.out.println( "CONTROLLER: " + out.getContent() );
+        
     }
     
     /**
@@ -333,17 +346,18 @@ public class Controller extends SingleAgent{
      */
     public void receiveMessage() throws InterruptedException{
       
-       ACLMessage in = new ACLMessage();
-       in = this.receiveACLMessage();
-       JsonObject message= JsonObject.readFrom(in.getContent());
-       battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
+       JsonObject message = Json.parse( this.receiveACLMessage().getContent() ).asObject();
+       
+       this.battery= (int) message.getFloat("battery", -1); //in case of problem, battery is one
+
        JsonObject gpsObject=message.get("gps").asObject();
-       gps.first=(int) gpsObject.getFloat("x",gps.first);
-       gps.second=(int) gpsObject.getInt("y",gps.second);
+       this.gps.first= gpsObject.getInt("x",gps.first);
+       this.gps.second= gpsObject.getInt("y",gps.second);
+       
        JsonArray rad=message.get("radar").asArray();
        int j=0,i2=0;
        for(int i=0;i<rad.size();i++){
-           radar[j][i2]=(int)rad.get(i).asFloat();
+           this.radar[j][i2] = rad.get(i).asInt();
            i2++;
            if(i2==5){
                j++;
@@ -355,7 +369,7 @@ public class Controller extends SingleAgent{
        j=0;
        i2=0;
        for(int i=0;i<scan.size();i++){
-           scanner[j][i2]=scan.get(i).asFloat();
+           this.scanner[j][i2]=scan.get(i).asFloat();
            i2++;
            if(i2==5){
                j++;
@@ -364,6 +378,12 @@ public class Controller extends SingleAgent{
        }
     }
     
+    /**
+     * Función de ejecución del flujo del controller.
+     * Se logea, resuelve la lógica, escucha al listener y se desloguea
+     * 
+     * @author Alberto Meana
+     */
     @Override
     public void execute(){
         
@@ -394,26 +414,32 @@ public class Controller extends SingleAgent{
         ////////////////////////////////////////////////////////////////////////
         // ACCIONES PARA RESOLVER MAPA
         
-        boolean fin= false;
-        
         while(true){ 
             try {
-                if(true)
-                    receiveMessage();
+                
+                this.receiveMessage();
                 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
          
-            String aux = Heuristic();
+            String aux = this.heuristic();
             
             System.out.println("CONTROLLER: ACTION: " + aux);
             
-            sendAction(aux);
-        }    
+            if( aux.equals( "found" ) ){
+            
+                break;
+            
+            }else{
+            
+                this.sendAction(aux);
+                
+            }
+        }
         ////////////////////////////////////////////////////////////////////////
         // LOGOUT CONTROLLER
-        /*logout();
+        this.logout();
         System.out.println( "CONTROLLER: Mensaje de logout enviado" );
 
         // Recepción del mensaje de deslogeo
@@ -431,10 +457,10 @@ public class Controller extends SingleAgent{
         System.out.println( "CONTROLLER: Mensaje de confirmación de logout recibido" );
 
         this.answer = Json.parse( this.result.getContent() ).asObject();
-        System.out.println( answer.get( "CONTROLLER: result" ) );
+        System.out.println( "CONTROLLER: " + answer.get( "result" ) );
 
         ////////////////////////////////////////////////////////////////////////
-        // MATAR AL CONTROLLER!!!
-        */
+        // MATAR AL CONTROLLER Y ENVIAR MUERTE AL LISTENER
+        
     }
 }

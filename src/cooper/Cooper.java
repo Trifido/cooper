@@ -6,14 +6,13 @@
 package cooper;
 
 import Controller.Controller;
-import com.eclipsesource.json.*;
 import es.upv.dsic.gti_ia.core.AgentsConnection;
 import Listener.*;
 import es.upv.dsic.gti_ia.core.AgentID;
 
 /**
  *
- * @author Andrés Ortiz Corrales
+ * @author Alberto Meana
  */
 public class Cooper {
 
@@ -24,8 +23,8 @@ public class Cooper {
      */
     public static void main(String[] args) throws Exception {
         
-        String nameListener = "Listener";
-        String nameController = "Controller";
+        String nameListener = "Listener2";
+        String nameController = "Controller2";
         
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Canmaior", "Ishiguro", false);
         Listener listener = new Listener( new AgentID( nameListener ),nameListener,nameController );
