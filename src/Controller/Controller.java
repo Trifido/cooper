@@ -28,6 +28,8 @@ public class Controller extends SingleAgent{
     private int[][] radar;
     private double[][] scanner;
     private Integer[][] world;
+    private String listenerName;
+    private String controllerName;
     
     private ACLMessage out;
     JsonObject key, answer, msg;
@@ -38,10 +40,13 @@ public class Controller extends SingleAgent{
      * Constructor del Agente Controller.
      * 
      * @param aid ID del agente para Magentix.
+     * @param nameListener 
+     * @param nameController
      * @throws Exception Error en la creación.
-     * @author Alba Rios
+     * @author Alba Rios, Alberto Meana
      */
-    public Controller(AgentID aid) throws Exception {
+    public Controller(AgentID aid, String nameListener, String nameController) throws Exception {
+        
         super(aid);
         this.battery = 0;
         this.msg= new JsonObject();
@@ -51,6 +56,9 @@ public class Controller extends SingleAgent{
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
         this.world = new Integer[500][500];
+        this.listenerName = nameListener;
+        this.controllerName = controllerName;
+        this.out = new ACLMessage();
         
         // Inicializar el mapa completo a valor "desconocido"
         /*for (Pair[] row : this.world){
@@ -72,16 +80,55 @@ public class Controller extends SingleAgent{
         // @see Frame.java | Interface.java
         this.gui = new Interface( 500,500 );
         
-        // ------------------
-        // TESTING
-        //this.gui.paint( 40,40,Color.RED );
-        //this.gui.paint( 10,10,Color.RED );
-        //this.gui.paint( 20,25,Color.BLUE );
-        // ------------------
-        
     }
     
     //public 
+    
+    /**
+     * Función para logearse en el sistema con el controlador
+     * @author Alberto Meana
+     */
+    private void login(){
+    
+        //Composición de Json de logeo.
+        this.msg = Json.object().add( "command","login" );
+        this.msg.add( "world","map3" );
+        this.msg.add( "radar", this.listenerName );
+        this.msg.add( "scanner", this.listenerName );
+        this.msg.add( "battery", this.listenerName );
+        this.msg.add( "gps", this.listenerName );
+        
+        // Creación del ACL
+        this.out.setSender( this.getAid() );
+        this.out.setReceiver( new AgentID( "Furud" ) );
+        
+        this.out.setContent( msg.toString() );
+        
+        this.send( out );
+        
+    }
+    
+    /**
+     * Función que desloguea al bot del sistema
+     * 
+     * @author Alberto Meana
+     */
+    private void logout(){
+    
+        // Composición del Json de logout
+        this.msg = Json.object().add( "command","logout" );
+        this.msg.add( "key", this.key.get( "result" ) );
+        
+        // Creación del ACL
+        this.out = new ACLMessage();
+        this.out.setSender( this.getAid() );
+        this.out.setReceiver( new AgentID( "Furud" ) );
+        
+        this.out.setContent( this.msg.toString() );
+        
+        this.send( out );
+    }
+    
     /**
      * Función encargada de obtener el beneficio de cada casilla.
      * 

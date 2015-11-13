@@ -19,15 +19,17 @@ public class Cooper {
 
     /**
      * @param args the command line arguments
+     *
+     * @author Alberto Meana
      */
     public static void main(String[] args) throws Exception {
         
-        String nameListener = "Listenerr2";
-        String nameController = "Controllerr2";
+        String nameListener = "Listenerr3";
+        String nameController = "Controllerr3";
         
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Canmaior", "Ishiguro", false);
         Listener listener = new Listener( new AgentID( nameListener ),nameListener,nameController );
-        Controller controller = new Controller( new AgentID( nameController ) );
+        Controller controller = new Controller( new AgentID( nameController ),nameListener,nameController );
          
         listener.start();
         controller.start();

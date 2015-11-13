@@ -64,7 +64,7 @@ public class Listener extends SingleAgent{
         ////////////////////////////////////////////////////////////////////////
         
         // Logear
-        this.login();
+        //this.login();
         
         // Recibir result
         this.result = null;
@@ -87,7 +87,7 @@ public class Listener extends SingleAgent{
         System.out.println( this.key.get( "result" ) );
         
         // Mandar key al controller.
-        sendKey(this.key);
+        //sendKey(this.key);
         
         // Primera Recepcion mensajes
         System.out.println( "mandada los sensores primera vez ");
@@ -108,7 +108,7 @@ public class Listener extends SingleAgent{
         /* toString() == "blabla" <-- ojo comillas!!    */
         /* asString() == blabla   <-- no hay comilas!!  */
         
-        logout( this.key.get( "result" ).asString() );
+        //logout( this.key.get( "result" ).asString() );
         System.out.println( "Mensaje de logout enviado" );
         
         this.result = null;
@@ -133,53 +133,7 @@ public class Listener extends SingleAgent{
     }
     
     
-    /**
-     * Función para logearse en el sistema con el controlador
-     * @author Alberto Meana
-     */
-    private void login(){
     
-        //Composición de Json de logeo.
-        JsonObject msg = Json.object().add( "command","login" );
-        msg.add( "world","map3" );
-        msg.add( "radar", this.listenerName );
-        msg.add( "scanner", this.listenerName );
-        msg.add( "battery", this.listenerName );
-        msg.add( "gps", this.listenerName );
-        /* ... Poner sensores y tal ... */
-        
-        // Creación del ACL
-        ACLMessage out = new ACLMessage();
-        out.setSender( this.getAid() );
-        out.setReceiver( new AgentID( "Furud" ) );
-        
-        out.setContent( msg.toString() );
-        
-        this.send( out );
-        
-    }
-    
-    /**
-     * Función que desloguea al bot del sistema
-     * 
-     * @author Alberto Meana
-     * @param key String con la key k usa el controlador para autenticar.
-     */
-    private void logout( String key ){
-    
-        // Composición del Json de logout
-        this.msg = Json.object().add( "command","logout" );
-        this.msg.add( "key", key );
-        
-        // Creación del ACL
-        this.out = new ACLMessage();
-        this.out.setSender( this.getAid() );
-        this.out.setReceiver( new AgentID( "Furud" ) );
-        
-        this.out.setContent( this.msg.toString() );
-        
-        this.send( out );
-    }
     
     /**
      * Une y Redirecciona las respuestas de los sensores al agente controler
@@ -260,17 +214,18 @@ public class Listener extends SingleAgent{
         } catch (InterruptedException ex) {
             System.out.println("Fallo en la recepción de mensajes.");
             //si da error se desloguea???
-            logout( this.key.get( "result" ).asString() );
+            //logout( this.key.get( "result" ).asString() );
         }
         
     }
     
-     /**
-     * Envia la key a controller
-     * 
-     * @author Andrés Ortiz
-     * @param key clave de conexión
-     */
+    
+    
+    
+    
+    
+    // DEPRECATED
+    /*
     private void sendKey(JsonObject key){
         
         ACLMessage out = new ACLMessage();
@@ -281,5 +236,40 @@ public class Listener extends SingleAgent{
         
         this.send(out);
     }
+    private void login(){
     
+        //Composición de Json de logeo.
+        JsonObject msg = Json.object().add( "command","login" );
+        msg.add( "world","map3" );
+        msg.add( "radar", this.listenerName );
+        msg.add( "scanner", this.listenerName );
+        msg.add( "battery", this.listenerName );
+        msg.add( "gps", this.listenerName );
+        
+        // Creación del ACL
+        ACLMessage out = new ACLMessage();
+        out.setSender( this.getAid() );
+        out.setReceiver( new AgentID( "Furud" ) );
+        
+        out.setContent( msg.toString() );
+        
+        this.send( out );
+        
+    }
+    private void logout( String key ){
+    
+        // Composición del Json de logout
+        this.msg = Json.object().add( "command","logout" );
+        this.msg.add( "key", key );
+        
+        // Creación del ACL
+        this.out = new ACLMessage();
+        this.out.setSender( this.getAid() );
+        this.out.setReceiver( new AgentID( "Furud" ) );
+        
+        this.out.setContent( this.msg.toString() );
+        
+        this.send( out );
+    }
+    */
 }
