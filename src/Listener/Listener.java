@@ -133,36 +133,6 @@ public class Listener extends SingleAgent{
     }
     
     
-<<<<<<< HEAD
-=======
-    /**
-     * Función para logearse en el sistema con el controlador
-     * @author Alberto Meana
-     */
-    private void login(){
-    
-        //Composición de Json de logeo.
-        JsonObject msg = Json.object().add( "command","login" );
-        msg.add( "world","map1" );
-        msg.add( "radar", this.listenerName );
-        msg.add( "scanner", this.listenerName );
-        msg.add( "battery", this.listenerName );
-        msg.add( "gps", this.listenerName );
-        /* ... Poner sensores y tal ... */
-        
-        // Creación del ACL
-        ACLMessage out = new ACLMessage();
-        out.setSender( this.getAid() );
-        out.setReceiver( new AgentID( "Furud" ) );
-        
-        out.setContent( msg.toString() );
-        
-        this.send( out );
-        
-    }
->>>>>>> origin/master
-    
-    
     /**
      * Une y Redirecciona las respuestas de los sensores al agente controler
      * 
