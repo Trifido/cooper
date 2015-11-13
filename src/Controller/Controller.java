@@ -210,12 +210,12 @@ public class Controller extends SingleAgent{
         
         if(this.battery < 2){
             System.out.println("REFUEL");
-            return "REFUEL";
+            return "refuel";
         }
         //Si el bot está sobre la casilla 2 (objetivo), fin
         if(this.radar[2][2] == 2){
             System.out.println("FOUND");
-            return "FOUND";
+            return "found";
         }
         else{
             mostrarRadar();
@@ -263,6 +263,13 @@ public class Controller extends SingleAgent{
         this.out.setContent( this.msg.toString() );
         
         this.send( out );
+        
+        try {
+            this.out = receiveACLMessage();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println( out.getContent().toString() );
     }
     
     /**
@@ -348,7 +355,7 @@ public class Controller extends SingleAgent{
         } catch (InterruptedException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        while(!fin){ 
+        while(true){ 
             try {
                 // Recojo la Key y la guardo.
                 
@@ -356,7 +363,7 @@ public class Controller extends SingleAgent{
                 fin= this.receiveCheck();
                 //System.out.println( "Ha funcionado el check en el controller! " );
                 // Recibo los sensores.
-                if(!fin)
+                if(true)
                     receiveMessage();
                 
             } catch (InterruptedException ex) {

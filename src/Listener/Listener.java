@@ -141,7 +141,7 @@ public class Listener extends SingleAgent{
     
         //Composición de Json de logeo.
         JsonObject msg = Json.object().add( "command","login" );
-        msg.add( "world","map3" );
+        msg.add( "world","map1" );
         msg.add( "radar", this.listenerName );
         msg.add( "scanner", this.listenerName );
         msg.add( "battery", this.listenerName );
