@@ -24,8 +24,8 @@ public class Cooper {
      */
     public static void main(String[] args) throws Exception {
         
-        String nameListener = "Listenerr3";
-        String nameController = "Controllerr3";
+        String nameListener = "Listener";
+        String nameController = "Controller";
         
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Canmaior", "Ishiguro", false);
         Listener listener = new Listener( new AgentID( nameListener ),nameListener,nameController );

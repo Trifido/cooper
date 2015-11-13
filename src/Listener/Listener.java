@@ -3,7 +3,6 @@ package Listener;
 import com.eclipsesource.json.*;
 import es.upv.dsic.gti_ia.core.*;
 import java.util.ArrayList;
-import java.util.logging.*;
 
 /**
  * 
@@ -60,76 +59,18 @@ public class Listener extends SingleAgent{
     @Override
     public void execute(){
         
-        // INIT TEST EXECUTION
         ////////////////////////////////////////////////////////////////////////
+        // INIT EXECUTION LISTENER
         
-        // Logear
-        //this.login();
-        
-        // Recibir result
-        this.result = null;
-        
-        System.out.println( "\nMensaje de login enviado" );
-        try {
-            
-            this.result = this.receiveACLMessage();
-        
-        } catch (InterruptedException ex) {
-        
-            Logger.getLogger( Listener.class.getName( ) ).log( Level.SEVERE, null, ex );
-        
-        }
-        
-        System.out.println( "Mensaje de respuesta de login recibido" );
-        
-        // Imprimir result por consola para ver la key o el BAD_*
-        this.key = Json.parse( this.result.getContent() ).asObject();
-        System.out.println( this.key.get( "result" ) );
-        
-        // Mandar key al controller.
-        //sendKey(this.key);
-        
-        // Primera Recepcion mensajes
-        System.out.println( "mandada los sensores primera vez ");
-        // Escuchar sensores y enviar resultados
         while( !this.endConnection ){
-            
-            System.out.println( "Estoy en el bucle while 1");
+            System.out.println( "LISTENER: Escuchando...");
             escucharMensajes();
-            System.out.println( "Estoy en el bucle while 2");
         }
         
+        // MATAR AL LISTENER!!!
         
-        sendCheck("finish");
-        
-
-        // Deslogear
-            /*  IMPORTANTISIMO EN LOS PARSINGS DE JSON  */
-        /* toString() == "blabla" <-- ojo comillas!!    */
-        /* asString() == blabla   <-- no hay comilas!!  */
-        
-        //logout( this.key.get( "result" ).asString() );
-        System.out.println( "Mensaje de logout enviado" );
-        
-        this.result = null;
-        try {
-            
-            this.result = this.receiveACLMessage();
-        
-        } catch ( InterruptedException ex ) {
-        
-            Logger.getLogger( Listener.class.getName() ).log( Level.SEVERE, null, ex );
-        
-        }
-        
-        System.out.println( "Mensaje de confirmación de logout recibido" );
-        
-        this.answer = Json.parse( this.result.getContent() ).asObject();
-        System.out.println( answer.get( "result" ) );
-        
-        // END TEST EXECUTION
         ////////////////////////////////////////////////////////////////////////
-        
+        // END EXECUTION LISTENER
     }
     
     
@@ -179,12 +120,9 @@ public class Listener extends SingleAgent{
     private void escucharMensajes(){
 
         try {
-            //System.out.println("Contador: " + contador);
             while( (contador < 4) && !endConnection )
             {
-                
                 in = this.receiveACLMessage();
-                //System.out.println("\nRecibido mensaje <"+in.getContent());
                 
                 if((in.getContent().contains("CRASHED")) || (in.getContent().contains("FOUND")))
                 {
@@ -199,8 +137,6 @@ public class Listener extends SingleAgent{
             }
             if(!endConnection)
             { 
-                // mensajes.add(key);
-                sendCheck("continue");
                 recibidos = true;
                 redirectResponses(mensajes);
                 contador = 0;
@@ -210,64 +146,10 @@ public class Listener extends SingleAgent{
             }
             
         } catch (InterruptedException ex) {
-            System.out.println("Fallo en la recepción de mensajes.");
+            System.out.println("lISTENER: Fallo en la recepción de mensajes.");
             //si da error se desloguea???
             //logout( this.key.get( "result" ).asString() );
         }
         
     }
-    
-    
-    
-    
-    
-    
-    // DEPRECATED
-    /*
-    private void sendKey(JsonObject key){
-        
-        ACLMessage out = new ACLMessage();
-        
-        out.setSender(this.getAid());
-        out.setReceiver(new AgentID(controllerName));
-        out.setContent(key.toString());
-        
-        this.send(out);
-    }
-    private void login(){
-    
-        //Composición de Json de logeo.
-        JsonObject msg = Json.object().add( "command","login" );
-        msg.add( "world","map3" );
-        msg.add( "radar", this.listenerName );
-        msg.add( "scanner", this.listenerName );
-        msg.add( "battery", this.listenerName );
-        msg.add( "gps", this.listenerName );
-        
-        // Creación del ACL
-        ACLMessage out = new ACLMessage();
-        out.setSender( this.getAid() );
-        out.setReceiver( new AgentID( "Furud" ) );
-        
-        out.setContent( msg.toString() );
-        
-        this.send( out );
-        
-    }
-    private void logout( String key ){
-    
-        // Composición del Json de logout
-        this.msg = Json.object().add( "command","logout" );
-        this.msg.add( "key", key );
-        
-        // Creación del ACL
-        this.out = new ACLMessage();
-        this.out.setSender( this.getAid() );
-        this.out.setReceiver( new AgentID( "Furud" ) );
-        
-        this.out.setContent( this.msg.toString() );
-        
-        this.send( out );
-    }
-    */
 }

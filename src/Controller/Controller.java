@@ -10,8 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import GUI.*;
 import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.JFrame;
 
 /**
  *
@@ -32,6 +30,7 @@ public class Controller extends SingleAgent{
     private String controllerName;
     
     private ACLMessage out;
+    private ACLMessage result;
     JsonObject key, answer, msg;
     
     Interface gui;
@@ -59,6 +58,7 @@ public class Controller extends SingleAgent{
         this.listenerName = nameListener;
         this.controllerName = controllerName;
         this.out = new ACLMessage();
+        this.result = new ACLMessage();
         
         // Inicializar el mapa completo a valor "desconocido"
         /*for (Pair[] row : this.world){
@@ -116,8 +116,13 @@ public class Controller extends SingleAgent{
     private void logout(){
     
         // Composición del Json de logout
+        
+            /*  IMPORTANTISIMO EN LOS PARSINGS DE JSON  */
+        /* toString() == "blabla" <-- ojo comillas!!    */
+        /* asString() == blabla   <-- no hay comilas!!  */
+        
         this.msg = Json.object().add( "command","logout" );
-        this.msg.add( "key", this.key.get( "result" ) );
+        this.msg.add( "key", this.key.get( "result" ).asString() );
         
         // Creación del ACL
         this.out = new ACLMessage();
@@ -165,7 +170,8 @@ public class Controller extends SingleAgent{
      * @author Vicente Martínez
      */
     public String nextAction(Pair<Integer, Integer> npos){
-        String act= new String();
+        
+        String act;
         
         if (npos.first == 1 && npos.second == 1){
             act = "moveNW";
@@ -217,7 +223,7 @@ public class Controller extends SingleAgent{
     public void mostrarRadar(){
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
-                System.out.print(radar[i][j] + " ");
+                System.out.print( "CONTROLLER: " + radar[i][j] + " ");
                 
                 // comprobacion de out of bounds
                 if( (this.gps.first - ( i-2 ) ) >= 0 && ( this.gps.second - ( j-2 ) ) >= 0 ){
@@ -256,12 +262,12 @@ public class Controller extends SingleAgent{
         double benefit;
         
         if(this.battery < 2){
-            System.out.println("REFUEL");
+            System.out.println("CONTROLLER: REFUEL");
             return "refuel";
         }
         //Si el bot está sobre la casilla 2 (objetivo), fin
         if(this.radar[2][2] == 2){
-            System.out.println("FOUND");
+            System.out.println("CONTROLLER: FOUND");
             return "found";
         }
         else{
@@ -277,7 +283,7 @@ public class Controller extends SingleAgent{
                         }
                     }
                     else if (i!=2 || j!=2){
-                        System.out.println("OBSTACULO en ["+i+"]["+j+"]");
+                        System.out.println("CONTROLLER: OBSTACULO en ["+i+"]["+j+"]");
                         world[i][j]= -1;
                     }
                 }
@@ -290,12 +296,11 @@ public class Controller extends SingleAgent{
      * Función que envía al servidor la nueva localización
      * 
      * @author Rafael Ruiz
-     * @param localization Nueva posición para el agente
+     * @param action
      */
     public void sendAction(String action)
     {
         // Composición del Json de sendLocalization
-        System.out.println("Key: " + this.key.get( "result" ).toString());
         
         this.msg = Json.object().add( "command", action );
         this.msg.add( "key", this.key.get( "result" ).asString() );
@@ -316,7 +321,7 @@ public class Controller extends SingleAgent{
         } catch (InterruptedException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println( out.getContent().toString() );
+        System.out.println( "CONTROLLER: " + out.getContent().toString() );
     }
     
     /**
@@ -358,73 +363,78 @@ public class Controller extends SingleAgent{
            }
        }
     }
-    /**
-     * Espera a la recepción de un objeto JSON del listener
-     * 
-     * @author Andrés Ortiz
-     * @throws java.lang.InterruptedException
-     * 
-     */
-    private void receiveKey() throws InterruptedException{
-        
-        ACLMessage in = new ACLMessage();
-        in = this.receiveACLMessage();
-        //JsonObject message= JsonObject.readFrom(in.getContent());
-        //key=message.get("result").asObject(); 
-        
-        this.key = Json.parse( in.getContent() ).asObject(); 
-        
-    }
-    
-    /**
-     * Recibir el check de continuar o finalizar la ejecución.
-     * @author Vicente Martínez
-     */
-    private boolean receiveCheck() throws InterruptedException{
-        ACLMessage check = new ACLMessage();
-        check = this.receiveACLMessage();
-        
-        JsonObject message= JsonObject.readFrom(check.getContent());
-        String var= message.get("check").asString();
-        
-        if(var.equals("continue"))
-            return false;
-        else
-            return true;
-    }
-    
     
     @Override
     public void execute(){
-        boolean fin= false;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // LOGIN Y KEY
+        this.login();
+        
+        // Recibir result
+        this.result = null;
+        
+        System.out.println( "\n CONTROLLER: Mensaje de login enviado" );
         try {
-            this.receiveKey();
+            
+            this.result = this.receiveACLMessage();
+        
         } catch (InterruptedException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        
+            Logger.getLogger( Controller.class.getName( ) ).log( Level.SEVERE, null, ex );
+        
         }
+        
+        System.out.println( "CONTROLLER: Mensaje de respuesta de login recibido" );
+        
+        // Guardar la key que me envia en el result
+        this.key = Json.parse( this.result.getContent() ).asObject();
+        System.out.println( "CONTROLLER: " + this.key.get( "result" ) );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // ACCIONES PARA RESOLVER MAPA
+        
+        boolean fin= false;
+        
         while(true){ 
             try {
-                // Recojo la Key y la guardo.
-                
-                //System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
-                fin= this.receiveCheck();
-                //System.out.println( "Ha funcionado el check en el controller! " );
-                // Recibo los sensores.
                 if(true)
                     receiveMessage();
                 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+         
             String aux = Heuristic();
             
-            System.out.println("ACTION: " + aux);
+            System.out.println("CONTROLLER: ACTION: " + aux);
             
             sendAction(aux);
-            
-            
-            //System.out.println( "Ha funcionado el controller! " ); 
+        }    
+        ////////////////////////////////////////////////////////////////////////
+        // LOGOUT CONTROLLER
+        /*logout();
+        System.out.println( "CONTROLLER: Mensaje de logout enviado" );
+
+        // Recepción del mensaje de deslogeo
+        this.result = null;
+        try {
+
+            this.result = this.receiveACLMessage();
+
+        } catch ( InterruptedException ex ) {
+
+            Logger.getLogger( Controller.class.getName() ).log( Level.SEVERE, null, ex );
+
         }
+
+        System.out.println( "CONTROLLER: Mensaje de confirmación de logout recibido" );
+
+        this.answer = Json.parse( this.result.getContent() ).asObject();
+        System.out.println( answer.get( "CONTROLLER: result" ) );
+
+        ////////////////////////////////////////////////////////////////////////
+        // MATAR AL CONTROLLER!!!
+        */
     }
 }
