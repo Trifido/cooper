@@ -89,10 +89,16 @@ public class Listener extends SingleAgent{
         // Mandar key al controller.
         sendKey(this.key);
         
-        
+        // Primera Recepcion mensajes
+        System.out.println( "mandada los sensores primera vez ");
         // Escuchar sensores y enviar resultados
-        while( !this.endConnection )
+        while( !this.endConnection ){
+            
+            System.out.println( "Estoy en el bucle while 1");
             escucharMensajes();
+            System.out.println( "Estoy en el bucle while 2");
+        }
+        
         
         sendCheck("finish");
         
@@ -135,7 +141,7 @@ public class Listener extends SingleAgent{
     
         //Composición de Json de logeo.
         JsonObject msg = Json.object().add( "command","login" );
-        msg.add( "world","map1" );
+        msg.add( "world","map3" );
         msg.add( "radar", this.listenerName );
         msg.add( "scanner", this.listenerName );
         msg.add( "battery", this.listenerName );
