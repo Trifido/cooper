@@ -74,9 +74,9 @@ public class Controller extends SingleAgent{
         
         // ------------------
         // TESTING
-        this.gui.paint( 40,40,Color.RED );
-        this.gui.paint( 10,10,Color.RED );
-        this.gui.paint( 20,25,Color.BLUE );
+        //this.gui.paint( 40,40,Color.RED );
+        //this.gui.paint( 10,10,Color.RED );
+        //this.gui.paint( 20,25,Color.BLUE );
         // ------------------
         
     }
@@ -155,11 +155,40 @@ public class Controller extends SingleAgent{
         
         return act;
     }
-     
+    
+    /**
+     * (Alberto): Añadiendo pintado en interfaz.
+     * 
+     * ROJO = vacio
+     * NEGRO = Pared
+     * Verde = Objetivo
+     * 
+     * ( POR IMPLEMENTAR : EL BOT )
+     * 
+     * @author Alberto Meana
+     */
     public void mostrarRadar(){
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
                 System.out.print(radar[i][j] + " ");
+                
+                // comprobacion de out of bounds
+                if( (this.gps.first - ( i-2 ) ) >= 0 && ( this.gps.second - ( j-2 ) ) >= 0 ){
+                    // Color dependiendo de lo k haya en radar.
+                    switch( this.radar[i][j] ){
+
+                        case 0:
+                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.red );
+                            break;
+                        case 1:
+                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.BLACK );
+                            break;
+                        case 2:
+                            this.gui.paint( this.gps.first - ( i-2 ), this.gps.second - ( j -2 ), Color.GREEN );
+                            break;
+
+                    }
+                }
             }
             System.out.println();
         }
@@ -314,14 +343,18 @@ public class Controller extends SingleAgent{
     @Override
     public void execute(){
         boolean fin= false;
-        
+        try {
+            this.receiveKey();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
         while(!fin){ 
             try {
                 // Recojo la Key y la guardo.
-                this.receiveKey();
-                System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
+                
+                //System.out.println( "Ha funcionado la recepcion de la key en el controller! " );
                 fin= this.receiveCheck();
-                System.out.println( "Ha funcionado el check en el controller! " );
+                //System.out.println( "Ha funcionado el check en el controller! " );
                 // Recibo los sensores.
                 if(!fin)
                     receiveMessage();
@@ -337,7 +370,7 @@ public class Controller extends SingleAgent{
             sendAction(aux);
             
             
-            System.out.println( "Ha funcionado el controller! " ); 
+            //System.out.println( "Ha funcionado el controller! " ); 
         }
     }
 }

@@ -16,15 +16,15 @@ import java.util.logging.*;
  */
 public class Listener extends SingleAgent{
     //Listener (this) agent name
-    private String listenerName="Listenerr1";
+    private String listenerName;
     //Controller name
-    private String controllerName="Controllerr1";
+    private String controllerName;
     private ACLMessage result, in, out;
     JsonObject key, answer, msg, mensaRecibido;
     ArrayList <JsonObject> mensajes;
-    int contador = 0;
-    boolean recibidos = false;
-    boolean endConnection = false;
+    int contador;
+    boolean recibidos;
+    boolean endConnection;
     
     /**
      * Constructor del agente Listener
@@ -33,9 +33,10 @@ public class Listener extends SingleAgent{
      * @throws Exception Error de creación
      * @author Alberto Meana
      */
-    public Listener(AgentID aid) throws Exception {
+    public Listener( AgentID aid, String listenerName, String controllerName ) throws Exception {
         
         super(aid);
+        this.contador = 0;
         this.result = new ACLMessage();
         this.in = new ACLMessage();
         this.out = new ACLMessage();
@@ -43,6 +44,10 @@ public class Listener extends SingleAgent{
         this.answer = new JsonObject();
         this.msg = new JsonObject();
         this.mensajes = new ArrayList();
+        this.listenerName = listenerName;
+        this.controllerName = controllerName;
+        this.recibidos = false;
+        this.endConnection = false;
         
     }
     
@@ -214,14 +219,14 @@ public class Listener extends SingleAgent{
      * @author Nikolai González
      */
     private void escucharMensajes(){
-        String entero, separador;
+
         try {
             //System.out.println("Contador: " + contador);
             while( (contador < 4) && !endConnection )
             {
                 
                 in = this.receiveACLMessage();
-                System.out.println("\nRecibido mensaje <"+in.getContent());
+                //System.out.println("\nRecibido mensaje <"+in.getContent());
                 
                 if(in.getContent().contains("CRASHED"))
                 {
