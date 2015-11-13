@@ -229,7 +229,7 @@ public class Controller extends SingleAgent{
                             newpos.second= j;
                         }
                     }
-                    else {
+                    else if (i!=2 || j!=2){
                         System.out.println("OBSTACULO en ["+i+"]["+j+"]");
                         world[i][j]= -1;
                     }
