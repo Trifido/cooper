@@ -428,7 +428,16 @@ public class Controller extends SingleAgent{
             System.out.println("CONTROLLER: ACTION: " + aux);
             
             if( aux.equals( "found" ) ){
-            
+                JsonObject response=new JsonObject();
+                
+                response= Json.object().add( "action","FOUND" );
+                
+                ACLMessage out = new ACLMessage();
+                out.setSender(this.getAid());
+                out.setReceiver(new AgentID(listenerName));
+                out.setContent(response.toString());
+        
+                this.send(out);
                 break;
             
             }else{
