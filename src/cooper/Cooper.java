@@ -9,6 +9,7 @@ import Controller.Controller;
 import es.upv.dsic.gti_ia.core.AgentsConnection;
 import Listener.*;
 import es.upv.dsic.gti_ia.core.AgentID;
+import mapproject.MapProject;
 
 /**
  *
@@ -26,13 +27,17 @@ public class Cooper {
         String nameListener = "Listener2";
         String nameController = "Controller2";
         
+        MapProject map = new MapProject();
+        
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Canmaior", "Ishiguro", false);
         Listener listener = new Listener( new AgentID( nameListener ),nameListener,nameController );
-        Controller controller = new Controller( new AgentID( nameController ),nameListener,nameController );
-         
+        Controller controller = new Controller( new AgentID( nameController ),nameListener,nameController,map );
+        
+        //map.startInterface();
         listener.start();
         controller.start();
         
+        map.startInterface();
     }
     
 }

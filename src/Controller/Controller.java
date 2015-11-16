@@ -9,9 +9,9 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import GUI.*;
-import java.awt.Color;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
+import mapproject.MapProject;
+import mapproject.TileType;
 
 /**
  *
@@ -36,7 +36,7 @@ public class Controller extends SingleAgent{
     private ACLMessage result;
     private JsonObject key, answer, msg;
     
-    public Interface gui;
+    public MapProject gui;
     public WorldDialog ask;
     
     /**
@@ -48,7 +48,7 @@ public class Controller extends SingleAgent{
      * @throws Exception Error en la creación.
      * @author Alba Rios, Alberto Meana
      */
-    public Controller(AgentID aid, String nameListener, String nameController) throws Exception {
+    public Controller(AgentID aid, String nameListener, String nameController,MapProject map) throws Exception {
         
         super(aid);
         this.battery = 0;
@@ -64,15 +64,6 @@ public class Controller extends SingleAgent{
         this.out = new ACLMessage();
         this.result = new ACLMessage();
         
-        // Inicializar el mapa completo a valor "desconocido"
-        /*for (Pair[] row : this.world){
-            for (Pair p : row){
-                
-                p = new Pair( Square.UNKNOWN, 1 );
-                
-            }
-        }*/
-        
         for(int i=0; i<500; i++)
             for(int j=0; j<500; j++)
                 this.world[i][j]= 1;
@@ -84,8 +75,8 @@ public class Controller extends SingleAgent{
         // ------------------------------------------------------------
         // Alberto dice: "El frame se debe escalar al modelo del mapa"
         // @see Frame.java | Interface.java
-        this.gui = new Interface( 500,500 );
-        
+        //this.gui = new Interface( 500,500 );
+        this.gui = map;
     }
     
     /**
@@ -217,10 +208,6 @@ public class Controller extends SingleAgent{
     /**
      * Pintado en interfaz.
      * 
-     * ROJO = Vacio
-     * NEGRO = Pared
-     * VERDE = Objetivo
-     * BLUE = Bot
      * 
      * ( POR IMPLEMENTAR : EL BOT )
      * 
@@ -230,34 +217,37 @@ public class Controller extends SingleAgent{
         
         for( int i = 0; i < 5; i++ ){
             for( int j = 0; j < 5; j++ ){
-            
+                
+                // Interfaz nueva
                 if( this.gps.first + ( i-2 ) >= 0 && this.gps.second + ( j-2 ) >= 0 && this.gps.first + ( i-2 ) < 500 && this.gps.second + ( j-2 ) < 500 ){
+                    
                     switch( this.radar[i][j] ){
 
-                        case 0:
-                            this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.RED );
-                            break;
-                        case 1:
-                            this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.BLACK );
-                            break;
-                        case 2:    
-                            if( i == 2 && j == 2 ){
+                    case 0:
+                        this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Grass );
+                        break;
+                    case 1:
+                        this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Rock );
+                        break;
+                    case 2:    
+                        if( i == 2 && j == 2 ){
 
-                                this.gui.paint( this.gps.first, this.gps.second, Color.ORANGE );
+                            this.gui.grid.setTile( this.gps.first, this.gps.second, TileType.Goal );
 
-                            }else{
+                        }else{
 
-                                this.gui.paint( this.gps.first + ( i-2 ), this.gps.second + (j-2), Color.GREEN );
+                            this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Dirt );
 
-                            }
-                            break;
+                        }
+                        break;
                     }
                 }
             }
         }
         // El bot
-        if( this.radar[2][2] != 2 )
-            this.gui.paint( this.gps.first, this.gps.second, Color.BLUE );
+        //if( this.radar[2][2] != 2 )
+            //this.gui.grid.setTile(battery, battery, TileType.Dirt);
+            //this.gui.paint( this.gps.first, this.gps.second, Color.BLUE );
         
     }
     
@@ -386,7 +376,7 @@ public class Controller extends SingleAgent{
      */
     @Override
     public void execute(){
-        
+
         ////////////////////////////////////////////////////////////////////////
         // LOGIN Y KEY
         this.login();

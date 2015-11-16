@@ -1,6 +1,7 @@
 package mapproject;
 
 import static helpers.Artist.*;
+import java.awt.Color;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -20,6 +21,8 @@ public class MapProject {
     public static final int ZOOMSPEED = 2;
     public static final int MINZOOM = 1, MAXZOOM = 16;
     
+    public TileGrid grid;
+    
     /**
      * Constructor que crea el mapa y la interfaz
      * 
@@ -29,31 +32,19 @@ public class MapProject {
         
         BeginSession();
         
-        int[][] prueba = {
-            {2,0,0,0,2},
-            {0,1,0,1,0},
-            {0,0,0,0,0},
-            {0,1,1,1,0},
-            {0,0,0,0,0}
-        };
+        this.grid = new TileGrid();
         
-        TileGrid grid = new TileGrid(prueba);
-
-        //Prueba
-        /*.setTile(100, 100, TileType.Dirt);
-        grid.setTile(101, 100, TileType.Dirt);
-        grid.setTile(102, 100, TileType.Dirt);
-        grid.setTile(103, 100, TileType.Dirt);
-        grid.setTile(104, 100, TileType.Dirt);
-        grid.setTile(105, 100, TileType.Dirt);
-        grid.setTile(106, 100, TileType.Dirt);
-        grid.setTile(107, 100, TileType.Dirt);
-        grid.setTile(108, 100, TileType.Dirt);
-        grid.setTile(109, 100, TileType.Dirt);
-        grid.setTile(110, 100, TileType.Dirt);*/
+    }
+    
+    /**
+     * start()
+     * 
+     * 
+     */
+    public void startInterface() {
         
         while(!Display.isCloseRequested()){
-            grid.Draw();
+            this.grid.Draw();
             Display.update();
             Display.sync(60);
               
@@ -89,9 +80,4 @@ public class MapProject {
             applyZoom(ZOOM);
         }
     }
-    
-    public static void main(String[] args) {
-        new MapProject();
-    }
-    
 }

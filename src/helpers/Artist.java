@@ -100,6 +100,7 @@ public class Artist {
      * @author Alba Ríos
      */
     public static Texture LoadTexture(String path, String fileType){
+        System.out.println( System.getProperty("user.dir"));
         Texture tex = null;
         InputStream in = ResourceLoader.getResourceAsStream(path);
         try {
