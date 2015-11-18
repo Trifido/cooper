@@ -13,7 +13,7 @@ public class TileGrid {
     public static final int TILE_SIZE = 2; //Anchura y altura de un Tile
     public Tile[][] map;
     private int tilesWide = 500, tilesHigh = 500; //Ancho y alto del mapa
-    private Texture empty, unknown, obstacle, goal;
+    private Texture empty, unknown, obstacle, goal, bot;
     
     /**
      * Constructor que crea un mapa
@@ -25,6 +25,7 @@ public class TileGrid {
         unknown = QuickLoad((TileType.Dirt).textureName);
         obstacle = QuickLoad((TileType.Rock).textureName);
         goal = QuickLoad((TileType.Goal).textureName);
+        bot = QuickLoad((TileType.Bot).textureName);
         map = new Tile[tilesWide][tilesHigh];
         for(int i = 0; i < map.length; i++){
             for (int j = 0; j < map[i].length; j++){
@@ -45,6 +46,7 @@ public class TileGrid {
         unknown = QuickLoad((TileType.Dirt).textureName);
         obstacle = QuickLoad((TileType.Rock).textureName);
         goal = QuickLoad((TileType.Goal).textureName);
+        bot = QuickLoad((TileType.Bot).textureName);
         map = new Tile[tilesWide][tilesHigh];
         for(int i = 0; i < map.length; i++){
             for (int j = 0; j < map[i].length; j++){
@@ -88,6 +90,9 @@ public class TileGrid {
                 break;
             case Goal:
                 map[xCoord][yCoord] = new Tile(xCoord*TILE_SIZE, yCoord*TILE_SIZE, TILE_SIZE, TILE_SIZE, goal);
+                break;
+            case Bot:
+                map[xCoord][yCoord] = new Tile(xCoord*TILE_SIZE, yCoord*TILE_SIZE, TILE_SIZE, TILE_SIZE, bot);
                 break;
         }
     }

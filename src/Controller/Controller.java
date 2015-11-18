@@ -221,7 +221,7 @@ public class Controller extends SingleAgent{
                 // Interfaz nueva
                 if( this.gps.first + ( i-2 ) >= 0 && this.gps.second + ( j-2 ) >= 0 && this.gps.first + ( i-2 ) < 500 && this.gps.second + ( j-2 ) < 500 ){
                     
-                    switch( this.radar[i][j] ){
+                    switch( this.radar[j][i] ){
 
                     case 0:
                         this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Grass );
@@ -232,11 +232,11 @@ public class Controller extends SingleAgent{
                     case 2:    
                         if( i == 2 && j == 2 ){
 
-                            this.gui.grid.setTile( this.gps.first, this.gps.second, TileType.Goal );
+                            //this.gui.grid.setTile( this.gps.first, this.gps.second, TileType.Goal );
 
                         }else{
 
-                            this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Dirt );
+                            this.gui.grid.setTile( this.gps.first + ( i-2 ), this.gps.second + (j-2), TileType.Goal );
 
                         }
                         break;
@@ -245,9 +245,7 @@ public class Controller extends SingleAgent{
             }
         }
         // El bot
-        //if( this.radar[2][2] != 2 )
-            //this.gui.grid.setTile(battery, battery, TileType.Dirt);
-            //this.gui.paint( this.gps.first, this.gps.second, Color.BLUE );
+        this.gui.grid.setTile( this.gps.first, this.gps.second, TileType.Bot );
         
     }
     

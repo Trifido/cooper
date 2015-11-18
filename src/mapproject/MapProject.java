@@ -55,6 +55,8 @@ public class MapProject {
         }
         
         Display.destroy(); //Cerrar la interfaz
+        
+        System.exit( 0 );
     }
     
     /**

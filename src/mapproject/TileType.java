@@ -6,7 +6,7 @@ package mapproject;
  * @author Alba Ríos
  */
 public enum TileType {
-    Grass("grass", true), Dirt("dirt", false), Rock("rock", false), Goal("goal", false);
+    Grass("grass", true), Dirt("dirt", false), Rock("rock", false), Goal("goal", false), Bot("bot",false);
     
     String textureName;
     boolean buildable;
