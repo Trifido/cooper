@@ -21,7 +21,8 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Artist {
 
     public static final int WIDTH = 1000, HEIGHT = 1000;
-
+    private static int minX = 0, minY= 0, maxX = WIDTH, maxY = HEIGHT;
+    private static int activeZoom = 1;
     
     /**
     * Constructor para inicializar los datos
@@ -136,9 +137,9 @@ public class Artist {
      * @author Alba Ríos
      */
     public static void applyZoom(int zoom){
-        int minX = 0, minY= 0, maxX = WIDTH, maxY = HEIGHT;
         int size = WIDTH/zoom, halfSize = size/2; //WIDTH o HEIGHT, porque es cuadrado. Largo y ancho del viewport.
-        int mouseX = Mouse.getX(), mouseY = HEIGHT - Mouse.getY();
+        int mouseX = (Mouse.getX()/activeZoom + minX), mouseY = ((HEIGHT - Mouse.getY())/activeZoom + minY);
+        activeZoom = zoom;
         
         //Calcular el X máximo y mínimo de la vista
         if (mouseX < halfSize){ //
@@ -173,9 +174,9 @@ public class Artist {
         glOrtho(minX, maxX, maxY, minY, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         
-        /*System.out.println("Prueba: " + " Pinchado en : " + Mouse.getX() + " , "+ Mouse.getY());
+        System.out.println("Prueba: " + " Pinchado en : " + mouseX + " , "+ mouseY);
         System.out.println(" Min x: " + minX + " , Max x: "+ maxX);
-        System.out.println(" Min y: " + minY + " , Max y: "+ maxY);*/
+        System.out.println(" Min y: " + minY + " , Max y: "+ maxY);
     }
     
 }

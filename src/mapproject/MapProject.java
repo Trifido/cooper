@@ -37,9 +37,9 @@ public class MapProject {
     }
     
     /**
-     * start()
+     * Método que inicializa y controla el ciclo de vida de la interfaz
      * 
-     * 
+     * @author Alberto Meana, Alba Ríos
      */
     public void startInterface() {
         
