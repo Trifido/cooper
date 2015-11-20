@@ -8,6 +8,7 @@ import java.awt.*;
  * V 1.0 - Implementación base.
  * V 1.1 - Mejora y método de pintado específico, eliminación de variables innecesarias.
  * V 1.2 - Creación del zoom en la interfaz a petición de Vicente (Machaca nº1) @see Interfaze.java
+ * ---- || DEPRECATED || ----
  * 
  * @author Alberto Meana, Alba Ríos
  */

@@ -15,8 +15,8 @@ import java.util.ArrayList;
  */
 public class Listener extends SingleAgent{
 
-    private String listenerName;
-    private String controllerName;
+    private final String listenerName;
+    private final String controllerName;
     private ACLMessage result, in, out;
     JsonObject key, answer, msg, messageReceived;
     ArrayList <JsonObject> messages;
@@ -28,6 +28,8 @@ public class Listener extends SingleAgent{
      * Constructor del agente Listener
      * 
      * @param aid ID del agente para Magentix
+     * @param listenerName Nombre del Listener en string definido en el main.
+     * @param controllerName Nombre del Controller en string definido en el main.
      * @throws Exception Error de creación
      * @author Alberto Meana
      */
@@ -70,7 +72,7 @@ public class Listener extends SingleAgent{
         }
         
         // MATAR AL LISTENER!!!
-        
+        System.out.println( "LISTENER: HE MUERTO!");
         ////////////////////////////////////////////////////////////////////////
         // END EXECUTION LISTENER
     }
@@ -125,14 +127,10 @@ public class Listener extends SingleAgent{
                 this.redirectResponses(this.messages);
                 this.cont = 0;
             }
-            else{
-                //sendCheck("finish");
-            }
             
         } catch (InterruptedException ex) {
             System.out.println("lISTENER: Fallo en la recepción de mensajes.");
-            //si da error se desloguea???
-            //logout( this.key.get( "result" ).asString() );
+
         }
         
     }

@@ -9,20 +9,39 @@ public class WorldDialog extends javax.swing.JDialog {
 
     public String worldToSolve;
     
+    /**
+     * Constructor por defecto del dialog.
+     * 
+     * @param parent -
+     * @param modal -
+     * @author Alberto Meana
+     */
     public WorldDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
     }
     
+    /**
+     * Método para recuperar el mapa seleccionado.
+     * 
+     * @return Mapa que se va a resolver en String.
+     * @author Alberto Meana
+     */
     public String getWordl(){
     
         this.setVisible( true );
-        return jComboBox1.getSelectedItem().toString();
+        return "map" + jComboBox1.getSelectedItem().toString();
     }
     
+    /**
+     * Método que gestiona el inicio de la acción eliminando el JDialog.
+     * 
+     * @author Alberto Meana
+     */
     private void ok(){
         this.setVisible( false );
+        this.dispose();
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -76,7 +95,13 @@ public class WorldDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    /**
+     * Método para accionar el cierre de ventana al pulsar el botón de GO!.
+     * 
+     * @param evt 
+     * @author Alberto Meana
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.ok();
     }//GEN-LAST:event_jButton1ActionPerformed

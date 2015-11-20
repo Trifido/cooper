@@ -19,8 +19,8 @@ public class Cooper {
      */
     public static void main(String[] args) throws Exception {
         
-        String nameListener = "Listener1";
-        String nameController = "Controller1";
+        String nameListener = "Listener";
+        String nameController = "Controller";
         
         MapProject map = new MapProject();
         

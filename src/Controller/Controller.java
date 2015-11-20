@@ -28,9 +28,9 @@ public class Controller extends SingleAgent{
     private int[][] radar;
     private double[][] scanner;
     private Integer[][] world;
-    private String listenerName;
-    private String controllerName;
-    private String worldToSolve;
+    private final String listenerName;
+    private final String controllerName;
+    private final String worldToSolve;
     
     private ACLMessage out;
     private ACLMessage result;
@@ -43,8 +43,9 @@ public class Controller extends SingleAgent{
      * Constructor del Agente Controller.
      * 
      * @param aid ID del agente para Magentix.
-     * @param nameListener 
-     * @param nameController
+     * @param nameListener Nombre del Listener en string definido en el main.
+     * @param nameController Nombre del Controller en string definido en el main.
+     * @param map Referncia a la interfaz creada en el main para modificación a datos.
      * @throws Exception Error en la creación.
      * @author Alba Rios, Alberto Meana
      */
@@ -60,7 +61,7 @@ public class Controller extends SingleAgent{
         this.scanner = new double[5][5];
         this.world = new Integer[500][500];
         this.listenerName = nameListener;
-        this.controllerName = controllerName;
+        this.controllerName = nameController;
         this.out = new ACLMessage();
         this.result = new ACLMessage();
         
@@ -68,14 +69,9 @@ public class Controller extends SingleAgent{
             for(int j=0; j<500; j++)
                 this.world[i][j]= 1;
 
-       
-        this.worldToSolve = "map" + (new WorldDialog( new JFrame(), true) ).getWordl();
-        System.out.println( worldToSolve );
-        // Inicializacion de la interfaz:
-        // ------------------------------------------------------------
-        // Alberto dice: "El frame se debe escalar al modelo del mapa"
-        // @see Frame.java | Interface.java
-        //this.gui = new Interface( 500,500 );
+       // Inicializacion de la interfaz:
+        this.worldToSolve = (new WorldDialog( new JFrame(), true) ).getWordl();
+        System.out.println(this.worldToSolve);
         this.gui = map;
     }
     
@@ -458,6 +454,7 @@ public class Controller extends SingleAgent{
 
         ////////////////////////////////////////////////////////////////////////
         // MATAR AL CONTROLLER Y ENVIAR MUERTE AL LISTENER
+        System.out.println( "CONTROLLER: HE MUERTO!");
         
     }
 }

@@ -7,6 +7,7 @@ import javax.swing.JFrame;
  * Clase contenedor para el grid de diseño para mejor abstracción.
  * Directamente relacionada con Frame.java
  * V 1.0
+ * ---- || DEPRECATED || ----
  * 
  * @see Frame.java
  * @author Alberto Meana, Alba Ríos
