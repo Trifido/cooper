@@ -31,6 +31,7 @@ public class Controller extends SingleAgent{
     private final String listenerName;
     private final String controllerName;
     private final String worldToSolve;
+    private HeuristicaBasica heuristica;
     
     private ACLMessage out;
     private ACLMessage result;
@@ -64,6 +65,7 @@ public class Controller extends SingleAgent{
         this.controllerName = nameController;
         this.out = new ACLMessage();
         this.result = new ACLMessage();
+        this.heuristica= new HeuristicaBasica();
         
         for(int i=0; i<500; i++)
             for(int j=0; j<500; j++)
@@ -73,6 +75,8 @@ public class Controller extends SingleAgent{
         this.worldToSolve = (new WorldDialog( new JFrame(), true) ).getWordl();
         System.out.println(this.worldToSolve);
         this.gui = map;
+        
+        this.heuristica.actualizarSensores(battery, gps, radar, scanner);
     }
     
     /**
@@ -127,81 +131,6 @@ public class Controller extends SingleAgent{
     }
     
     /**
-     * Función encargada de obtener el beneficio de cada casilla.
-     * 
-     * @param i
-     * @param j
-     * @return 
-     * @author Vicente Martínez
-     */
-    public double getBenefit(int i, int j){
-        if (i == 1 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second - 1];
-        else if (i == 1 && j == 2)
-            return this.scanner[i][j] * this.world[gps.first][gps.second - 1];
-        else if (i == 1 && j == 3) 
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second - 1];
-        else if (i == 2 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second];
-        else if (i == 2 && j == 3)
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second];
-        else if (i == 3 && j == 1)
-            return this.scanner[i][j] * this.world[gps.first - 1][gps.second + 1];
-        else if (i == 3 && j == 2)
-            return this.scanner[i][j] * this.world[gps.first][gps.second + 1];
-        else
-            return this.scanner[i][j] * this.world[gps.first + 1][gps.second + 1];
-    }
-    
-    /**
-     * Función encargada de establecer la acción elegida y guardar las visitas
-     * realizadas en el mapa "world".
-     * 
-     * @param npos
-     * @return 
-     * @author Vicente Martínez
-     */
-    public String nextAction(Pair<Integer, Integer> npos){
-        
-        String act;
-        
-        if (npos.first == 1 && npos.second == 1){
-            act = "moveNW";
-            this.world[this.gps.first - 1][this.gps.second - 1]++;
-        }
-        else if (npos.first == 1 && npos.second == 2){
-            act = "moveN";
-            this.world[this.gps.first][this.gps.second - 1]++;
-        }
-        else if (npos.first == 1 && npos.second == 3){
-            act = "moveNE";
-            this.world[this.gps.first + 1][this.gps.second - 1]++;
-        }
-        else if (npos.first == 2 && npos.second == 1){
-            act = "moveW";
-            this.world[this.gps.first - 1][this.gps.second]++;
-        }
-        else if (npos.first == 2 && npos.second == 3){
-            act = "moveE";
-            this.world[this.gps.first + 1][this.gps.second]++;
-        }
-        else if (npos.first == 3 && npos.second == 1){
-            act = "moveSW";
-            this.world[this.gps.first - 1][this.gps.second + 1]++;
-        }
-        else if (npos.first == 3 && npos.second == 2){
-            act = "moveS";
-            this.world[this.gps.first][this.gps.second + 1]++;
-        }
-        else{
-            act = "moveSE";
-            this.world[this.gps.first + 1][this.gps.second + 1]++;
-        }
-        
-        return act;
-    }
-    
-    /**
      * Pintado en interfaz.
      * 
      * 
@@ -243,50 +172,6 @@ public class Controller extends SingleAgent{
         // El bot
         this.gui.grid.setTile( this.gps.first, this.gps.second, TileType.Bot );
         
-    }
-    
-    /**
-     * Función encargada de elegir la mejor acción posible a partir de un 
-     * algorítmo Greedy.
-     * @return 
-     * @author Vicente Martínez
-     */
-    public String heuristic(){
-        
-        this.paint();
-        
-        Pair<Integer, Integer> newpos = new Pair(2,2);
-        this.minValue= Double.POSITIVE_INFINITY;
-        double benefit;
-        
-        if(this.battery < 2){
-            System.out.println("CONTROLLER: REFUEL");
-            return "refuel";
-        }
-        //Si el bot está sobre la casilla 2 (objetivo), fin
-        if(this.radar[2][2] == 2){
-            System.out.println("CONTROLLER: FOUND");
-            return "found";
-        }
-        else{
-            for(int i=1; i<4; i++){
-                for(int j=1; j<4; j++){
-                    if((i!=2 || j!=2) && this.radar[i][j] != 1){ 
-                        benefit= getBenefit(i, j);
-                        if(this.minValue > benefit){
-                            this.minValue= benefit;
-                            newpos.first= i;
-                            newpos.second= j;
-                        }
-                    }
-                    else if (i!=2 || j!=2){
-                        System.out.println("CONTROLLER: OBSTACULO en ["+i+"]["+j+"]");
-                        this.world[i][j]= -1;
-                    }
-                }
-            }
-            return nextAction(newpos);
-        }
     }
     
     /**
@@ -360,6 +245,8 @@ public class Controller extends SingleAgent{
                i2=0;
            }
        }
+       
+       this.heuristica.actualizarSensores(battery, gps, radar, scanner);  
     }
     
     /**
@@ -407,7 +294,9 @@ public class Controller extends SingleAgent{
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
          
-            String aux = this.heuristic();
+            this.paint();
+            String aux= this.heuristica.heuristic();
+            
             
             System.out.println("CONTROLLER: ACTION: " + aux);
             

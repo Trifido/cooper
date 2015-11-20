@@ -174,9 +174,9 @@ public class Artist {
         glOrtho(minX, maxX, maxY, minY, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         
-        System.out.println("Prueba: " + " Pinchado en : " + mouseX + " , "+ mouseY);
-        System.out.println(" Min x: " + minX + " , Max x: "+ maxX);
-        System.out.println(" Min y: " + minY + " , Max y: "+ maxY);
+        //System.out.println("Prueba: " + " Pinchado en : " + mouseX + " , "+ mouseY);
+        //System.out.println(" Min x: " + minX + " , Max x: "+ maxX);
+        //System.out.println(" Min y: " + minY + " , Max y: "+ maxY);
     }
     
 }
