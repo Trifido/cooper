@@ -18,12 +18,11 @@ public class HeuristicaBasica {
     private double[][] scanner;
     private Integer[][] world;
     private boolean iniHeu2;
-    private boolean izq, dec;
     private double []minObstacle;
     private double []finalPoint;
-    private String antMov;
     private String action;
-    private int cont;
+    private double minValueFind;
+    private boolean upMVF;
     
     public HeuristicaBasica(){
         minObstacle= new double[2];
@@ -32,7 +31,8 @@ public class HeuristicaBasica {
         this.radar = new int[5][5];
         this.scanner = new double[5][5];
         this.world = new Integer[500][500];
-        this.cont = 0;
+        this.minValueFind= Double.POSITIVE_INFINITY;
+        this.upMVF= true;
         
         for(int i=0; i<500; i++)
             for(int j=0; j<500; j++)
@@ -124,6 +124,26 @@ public class HeuristicaBasica {
         return act;
     }
     
+    public void changeWorld(String act){
+                
+        if(act == "moveNW")
+            this.world[this.gps.first - 1][this.gps.second - 1]++;
+        else if (act == "moveN")
+            this.world[this.gps.first][this.gps.second - 1]++;
+        else if (act == "moveNE")
+            this.world[this.gps.first + 1][this.gps.second - 1]++;
+        else if ( act == "moveW")
+            this.world[this.gps.first - 1][this.gps.second]++;
+        else if (act == "moveE")
+            this.world[this.gps.first + 1][this.gps.second]++;
+        else if (act == "moveSW")
+            this.world[this.gps.first - 1][this.gps.second + 1]++;
+        else if ( act == "moveS")
+            this.world[this.gps.first][this.gps.second + 1]++;
+        else
+            this.world[this.gps.first + 1][this.gps.second + 1]++;
+    }
+    
     public boolean ahogado(){   
         for(int i=1; i<4; i++)
             for(int j=1; j<4; j++)
@@ -134,394 +154,178 @@ public class HeuristicaBasica {
     }
     
     public boolean isMovS(){
-        return radar[2][3]!=1;  //2 3
+        return radar[3][2]!=1;  //2 3
     }
     public boolean isMovSW(){
-        return radar[1][3]!=1;  // 1 3
+        return radar[3][1]!=1;  // 1 3
     }
     public boolean isMovSE(){
         return radar[3][3]!=1;
     }
     public boolean isMovE(){
-        return radar[3][2]!=1;  //3 2
+        return radar[2][3]!=1;  //3 2
     }
     public boolean isMovNE(){
-        return radar[3][1]!=1;  //3 1
+        return radar[1][3]!=1;  //3 1
     }
     public boolean isMovN(){
-        return radar[2][1]!=1;  //2 1
+        return radar[1][2]!=1;  //2 1
     }
     public boolean isMovNW(){
         return radar[1][1]!=1;  //1 1
     }
     public boolean isMovW(){
-        return radar[1][2]!=1;  //1 2
+        return radar[2][1]!=1;  //1 2
     }
     
-    public void IzqOrDec(){
-        if(antMov=="moveN" || antMov=="moveNE" || antMov=="moveNW"){
-            if((radar[1][1] + radar[2][1] + radar[3][1]) > (radar[1][3] + radar[2][3] + radar[3][3])){
-                action= "dec";
-            }
-            else
-                action= "izq";
-        }
-        else if(antMov=="moveS" || antMov=="moveSW" || antMov=="moveSE"){
-            if((radar[1][1] + radar[2][1] + radar[3][1]) > (radar[1][3] + radar[2][3] + radar[3][3])){
-                action= "izq";
-            }
-            else
-                action= "dec";
-        }
-        else if(antMov=="moveW"){
-            if((radar[1][1] + radar[1][2] + radar[1][3]) > (radar[3][1] + radar[3][2] + radar[3][3])){
-                action= "dec";
-            }
-            else
-                action= "izq";
-        }
-        else{
-            if((radar[1][1] + radar[1][2] + radar[1][3]) > (radar[3][1] + radar[3][2] + radar[3][3])){
-                action= "izq";
-            }
-            else
-                action= "dec";
-        }
-    }
     
-    public boolean sinSolucion(){
-        return (gps.first==finalPoint[0]) && (gps.second==finalPoint[1]);
+    public boolean sinSolucion(String act){
+                
+        if(act == "moveNW")
+            return this.world[this.gps.first - 1][this.gps.second - 1]==2;
+        else if (act == "moveN")
+            return this.world[this.gps.first][this.gps.second - 1]==2;
+        else if (act == "moveNE")
+            return this.world[this.gps.first + 1][this.gps.second - 1]==2;
+        else if ( act == "moveW")
+            return this.world[this.gps.first - 1][this.gps.second]==2;
+        else if (act == "moveE")
+            return this.world[this.gps.first + 1][this.gps.second]==2;
+        else if (act == "moveSW")
+            return this.world[this.gps.first - 1][this.gps.second + 1]==2;
+        else if ( act == "moveS")
+            return this.world[this.gps.first][this.gps.second + 1]==2;
+        else
+            return this.world[this.gps.first + 1][this.gps.second + 1]==2;
     }
     
     public boolean initHeuristic2(){
         double minObst= Double.POSITIVE_INFINITY;
         double minVoid= Double.POSITIVE_INFINITY;
+        
+        boolean resultObst;
+        
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
                 if((i!=2 || j!=2) && (radar[i][j] == 1)){
-                    if(radar[i][j] < minObst){
+                    if(scanner[i][j]<minObst)
                         minObst= scanner[i][j];
-                        minObstacle[0]= i;
-                        minObstacle[1]= j;
-                    }
                 }
                 else if((i!=2 || j!=2) && (radar[i][j] != 1)){
-                    if(radar[i][j] < minVoid){
+                    if(scanner[i][j]<minVoid)
                         minVoid= scanner[i][j];
-                    }
                 }
             }
         }
         
-         
-        
-        if(minObst < minVoid){
-            System.out.println("MINIMO OBSTACULO: " + minObst);
-            System.out.println("MINIMO VACIO: " + minVoid);
-            if(!iniHeu2){
-                finalPoint[0]=gps.first;
-                finalPoint[1]=gps.second;
-                cont++;
-                iniHeu2= true;
-                IzqOrDec();
+        if(minObst<minVoid){
+            if(this.minValueFind>scanner[2][2]){
+                this.minValueFind= scanner[2][2];
             }
-            
+        }
+        
+        if(this.minValueFind<minVoid)
             return true;
-        }
-        else{
-            
-            System.out.println("MINIMO VACIO: " + minVoid);
-            System.out.println("MINIMO OBSTACULO: " + minObst);
-            finalPoint[0]=0;
-            finalPoint[1]=0;
+        else
             return false;
-        }
     }
     
     public String heuristic2(){
+        String act= new String();
+        boolean accionElegida=false;
+        if(!isMovE()){
+            System.out.println("NO SE PUEDE A: E");
+            if(isMovNE()){
+                act= "moveNE";
+                accionElegida=true;
+            }
+            else if(isMovN()){
+                act= "moveN";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovN() && !accionElegida){
+            System.out.println("NO SE PUEDE A: N");
+            if(isMovNW()){
+                act= "moveNW";
+                accionElegida=true;
+            }
+            else if(isMovW()){
+                act= "moveW";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovW() && !accionElegida){
+            System.out.println("NO SE PUEDE A: W");
+            if(isMovSW()){
+                act= "moveSW";
+                accionElegida=true;
+            }
+            else if(isMovS()){
+                act= "moveS";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovS() && !accionElegida){
+            System.out.println("NO SE PUEDE A: S");
+            if(isMovSE()){
+                act= "moveSE";
+                accionElegida=true;
+            }
+            else if(isMovE()){
+                act= "moveE";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovSE() && !accionElegida){
+            System.out.println("NO SE PUEDE A: SE");
+            if(isMovE()){
+                act= "moveE";
+                accionElegida=true;
+            }
+            else if(isMovNE()){
+                act= "moveNE";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovSW() && !accionElegida){
+            System.out.println("NO SE PUEDE A: SW");
+            if(isMovS()){
+                act= "moveS";
+                accionElegida=true;
+            }
+            else if(isMovSE()){
+                act= "moveSE";
+                accionElegida=true;
+            }
+        }
+        else if(!isMovNW() && !accionElegida){
+            System.out.println("NO SE PUEDE A: NW");
+            if(isMovW()){
+                act= "moveW";
+                accionElegida=true;
+            }
+            else if(isMovSW()){
+                act= "moveSW";
+                accionElegida=true;
+            }
+        }
+        else if(!accionElegida){
+            System.out.println("NO SE PUEDE A: NE");
+            if(isMovN())
+                act= "moveN";
+            else if(isMovNW())
+                act= "moveNW";
+        }
         
-        if(sinSolucion() && cont==0)
+        if(sinSolucion(act)){
+            System.out.println("No tiene solución.");
             return "found";
-        
-        if(action=="izq"){
-            if(antMov=="moveN" || antMov=="moveNE" || antMov=="moveNW"){
-                if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else{
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-            }
-            else if(antMov=="moveS" || antMov=="moveSW" || antMov=="moveSE"){
-                if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else{
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-            }
-            else if(antMov=="moveW"){
-                if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else{
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-            }
-            else{   //MoveE
-                if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else{
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-            }
         }
-        else{
-            if(antMov=="moveN" || antMov=="moveNE" || antMov=="moveNW"){
-                if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else{
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-            }
-            else if(antMov=="moveS" || antMov=="moveSW" || antMov=="moveSE"){
-                if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else{
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-            }
-            else if(antMov=="moveW"){
-                if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else if(isMovSE()){
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-                else if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovN()){
-                    //antMov= "MoveN";
-                    return "moveN";
-                }
-                else{
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-            }
-            else{   //MoveE
-                if(isMovE()){
-                    //antMov= "MoveE";
-                    return "moveE";
-                }
-                else if(isMovNE()){
-                    //antMov= "MoveNE";
-                    return "moveNE";
-                }
-                else if(isMovN()){
-                   // antMov= "MoveN";
-                    return "moveN";
-                }
-                else if(isMovNW()){
-                    //antMov= "MoveNW";
-                    return "moveNW";
-                }
-                else if(isMovW()){
-                    //antMov= "MoveW";
-                    return "moveW";
-                }
-                else if(isMovSW()){
-                    //antMov= "MoveSW";
-                    return "moveSW";
-                }
-                else if(isMovS()){
-                    //antMov= "MoveS";
-                    return "moveS";
-                }
-                else{
-                    //antMov= "MoveSE";
-                    return "moveSE";
-                }
-            }
-            
-        }
-       
         
+        changeWorld(act);
+        System.out.println("ACCION ELEGIDA: "+act);
+        return act;
     }
     
     
@@ -550,7 +354,6 @@ public class HeuristicaBasica {
         }
         else{
             System.out.println("HEURISTICA 1");
-            cont=0;
             iniHeu2= false;
             
             for(int i=1; i<4; i++){
@@ -569,7 +372,6 @@ public class HeuristicaBasica {
                     }
                 }
             }
-            antMov= nextAction(newpos);
             return nextAction(newpos);
         }
     }
