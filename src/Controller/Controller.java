@@ -88,7 +88,7 @@ public class Controller extends SingleAgent{
     
         //Composición de Json de logeo.
         this.msg = Json.object().add( "command","login" );
-        this.msg.add( "world" ,this.worldToSolve );
+        this.msg.add( "world" , this.worldToSolve );
         this.msg.add( "radar", this.listenerName );
         this.msg.add( "scanner", this.listenerName );
         this.msg.add( "battery", this.listenerName );

@@ -17,10 +17,9 @@ public class HeuristicaBasica {
     private int[][] radar;
     private double[][] scanner;
     private Integer[][] world;
-    private boolean iniHeu2;
     private double []minObstacle;
     private double []finalPoint;
-    private String action;
+    private String actionAnterior;
     private double minValueFind;
     private boolean upMVF;
     private boolean initHeu2;
@@ -34,7 +33,8 @@ public class HeuristicaBasica {
         this.world = new Integer[500][500];
         this.minValueFind= Double.POSITIVE_INFINITY;
         this.upMVF= true;
-        this.initHeu2= false;
+        this.initHeu2= true;
+        actionAnterior="";
         
         for(int i=0; i<500; i++)
             for(int j=0; j<500; j++)
@@ -146,6 +146,25 @@ public class HeuristicaBasica {
             this.world[this.gps.first + 1][this.gps.second + 1]++;
     }
     
+    public boolean checkWorld(String act){
+        if(act == "moveNW")
+            return this.world[this.gps.first - 1][this.gps.second - 1]!=2;
+        else if (act == "moveN")
+            return this.world[this.gps.first][this.gps.second - 1]!=2;
+        else if (act == "moveNE")
+            return this.world[this.gps.first + 1][this.gps.second - 1]!=2;
+        else if ( act == "moveW")
+            return this.world[this.gps.first - 1][this.gps.second]!=2;
+        else if (act == "moveE")
+            return this.world[this.gps.first + 1][this.gps.second]!=2;
+        else if (act == "moveSW")
+            return this.world[this.gps.first - 1][this.gps.second + 1]!=2;
+        else if ( act == "moveS")
+            return this.world[this.gps.first][this.gps.second + 1]!=2;
+        else
+            return this.world[this.gps.first + 1][this.gps.second + 1]!=2;
+    }
+    
     public boolean ahogado(){   
         for(int i=1; i<4; i++)
             for(int j=1; j<4; j++)
@@ -200,36 +219,10 @@ public class HeuristicaBasica {
         else
             return ((this.gps.first + 1)==finalPoint[0] && (this.gps.second + 1)==finalPoint[1]);
     }
-    
-    public boolean HayObstaculo(){
-        double minObst= Double.POSITIVE_INFINITY;
-        double minVoid= Double.POSITIVE_INFINITY;
         
-        for(int i=1; i<4; i++){
-            for(int j=1; j<4; j++){
-                if((i!=2 || j!=2) && (radar[i][j] == 1)){
-                    if(scanner[i][j]<minObst)
-                        minObst= scanner[i][j];
-                }
-                else if((i!=2 || j!=2) && (radar[i][j] != 1)){
-                    if(scanner[i][j]<minVoid)
-                        minVoid= scanner[i][j];
-                }
-            }
-        }
-        
-        if(minObst==Double.POSITIVE_INFINITY || minObst>minVoid){
-            return false;
-        }
-        else
-            return true;
-    }
-    
     public boolean initHeuristic2(){
         double minObst= Double.POSITIVE_INFINITY;
         double minVoid= Double.POSITIVE_INFINITY;
-        
-        boolean resultObst;
         
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
@@ -262,7 +255,58 @@ public class HeuristicaBasica {
     public String heuristic2(){
         String act= new String();
         boolean accionElegida=false;
-        if(!isMovE()){
+        
+        if(!isMovE() && !isMovW() && !accionElegida){
+             System.out.println("CHICANE: W-E"); 
+             
+             if(actionAnterior=="moveSE" || actionAnterior=="moveS" || actionAnterior=="moveSW"){
+                if(isMovSW()){
+                   act= "moveSW";
+                   accionElegida=true;
+                }
+                else if(isMovS()){
+                   act= "moveS";
+                   accionElegida=true;
+                }
+             }
+             else if(actionAnterior=="moveNE" || actionAnterior=="moveN" || actionAnterior=="moveNW"){
+                 if(isMovNE()){
+                   act= "moveNE";
+                   accionElegida=true;
+                }
+                else if(isMovN()){
+                   act= "moveN";
+                   accionElegida=true;
+                }
+             }
+        }
+        
+        if(!isMovN() && !isMovS() && !accionElegida){
+             System.out.println("CHICANE: N-S"); 
+             
+             if(actionAnterior=="moveSE" || actionAnterior=="moveE" || actionAnterior=="moveNE"){
+                if(isMovSE()){
+                   act= "moveSE";
+                   accionElegida=true;
+                }
+                else if(isMovE()){
+                   act= "moveE";
+                   accionElegida=true;
+                }
+             }
+             else if(actionAnterior=="moveSW" || actionAnterior=="moveW" || actionAnterior=="moveNW"){
+                 if(isMovSW()){
+                   act= "moveSW";
+                   accionElegida=true;
+                }
+                else if(isMovW()){
+                   act= "moveW";
+                   accionElegida=true;
+                }
+             }
+        }
+        
+        if(!isMovE() && !accionElegida){
             System.out.println("NO SE PUEDE A: E");
             if(isMovNE()){
                 act= "moveNE";
@@ -348,7 +392,7 @@ public class HeuristicaBasica {
         }
         
         if(sinSolucion(act)){
-            System.out.println("No tiene solución.");
+            System.out.println("-------------------------- No tiene solución. --------------------------");
             return "found";
         }
         
@@ -361,12 +405,10 @@ public class HeuristicaBasica {
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
         double benefit;
-        initHeu2= false;
         finalPoint[0]= 0;
         finalPoint[1]= 0;
 
         System.out.println("HEURISTICA 1");
-        iniHeu2= false;
 
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
@@ -384,7 +426,8 @@ public class HeuristicaBasica {
                 }
             }
         }
-        return nextAction(newpos);
+        actionAnterior= nextAction(newpos);
+        return actionAnterior;
     }
     
     
@@ -408,14 +451,19 @@ public class HeuristicaBasica {
             System.out.println("AHOGADO");
             return "found";
         }
-        else if(/*!initHeu2 &&*/ initHeuristic2()){
+        else if(initHeuristic2()){
             System.out.println("HEURISTICA 2");
-            initHeu2= true;
-            finalPoint[0]= gps.first;
-            finalPoint[1]= gps.second;
-            return heuristic2();
+            
+            if(initHeu2){
+                finalPoint[0]= gps.first;
+                finalPoint[1]= gps.second;
+                initHeu2= false;
+            }
+            actionAnterior= heuristic2();
+            return actionAnterior;
         }
         else{
+            initHeu2=true;
             return heuristic1();
         }
     }
