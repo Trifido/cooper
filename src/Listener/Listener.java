@@ -18,11 +18,10 @@ public class Listener extends SingleAgent{
     private final String listenerName;
     private final String controllerName;
     private ACLMessage result, in, out;
-    JsonObject key, answer, msg, messageReceived;
-    ArrayList <JsonObject> messages;
-    int cont;
-    boolean received;
-    boolean endConnection;
+    private JsonObject key, answer, msg, messageReceived;
+    private ArrayList <JsonObject> messages;
+    private int cont;
+    private boolean endConnection;
     
     /**
      * Constructor del agente Listener
@@ -47,7 +46,6 @@ public class Listener extends SingleAgent{
         this.messages = new ArrayList();
         this.listenerName = listenerName;
         this.controllerName = controllerName;
-        this.received = false;
         this.endConnection = false;
         
     }
@@ -123,7 +121,6 @@ public class Listener extends SingleAgent{
             }
             if(!endConnection)
             { 
-                this.received = true;
                 this.redirectResponses(this.messages);
                 this.cont = 0;
             }
