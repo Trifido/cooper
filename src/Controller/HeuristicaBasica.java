@@ -24,6 +24,10 @@ public class HeuristicaBasica {
     private boolean upMVF;
     private boolean initHeu2;
     
+    /**
+     * Constructor de la clase
+     * @author Vicente Martínez
+     */
     public HeuristicaBasica(){
         minObstacle= new double[2];
         finalPoint= new double[2];
@@ -41,7 +45,13 @@ public class HeuristicaBasica {
                 this.world[i][j]= 1;
     }
     
-    
+    /**
+     * @param bat Entero que representa el nivel de batería.
+     * @param gps Objeto Pair que representa las coordenadas del bot.
+     * @param radar Matriz de enteros con la información del radar.
+     * @param scanner Matriz de double con la informacion del scanner.
+     * @author Vicente Martínez
+     */
     public void actualizarSensores(int bat, Pair<Integer, Integer> gps, int[][] radar, double[][] scanner){
         this.battery= bat;
         this.gps= gps;
@@ -54,9 +64,9 @@ public class HeuristicaBasica {
         /**
      * Función encargada de obtener el beneficio de cada casilla.
      * 
-     * @param i
-     * @param j
-     * @return 
+     * @param i Coordenada x de la casilla a la que se va a mover.
+     * @param j Coordenada y de la casilla a la que se va a mover.
+     * @return double Devuelve el producto de: nºvisitas x scanner[x][y]
      * @author Vicente Martínez
      */
     public double getBenefit(int i, int j){
@@ -82,8 +92,8 @@ public class HeuristicaBasica {
      * Función encargada de establecer la acción elegida y guardar las visitas
      * realizadas en el mapa "world".
      * 
-     * @param npos
-     * @return 
+     * @param npos Es un pair con con las coordenadas de la casilla elegida.
+     * @return String Devuelve la accion elegida.
      * @author Vicente Martínez
      */
     public String nextAction(Pair<Integer, Integer> npos){
@@ -126,8 +136,13 @@ public class HeuristicaBasica {
         return act;
     }
     
-    public void changeWorld(String act){
-                
+    /**
+     * Funcion encargada guardar las visitas realizadas en el mapa "world" para
+     * la heuristica 2.
+     * @param act Accion elegida.
+     * @author Vicente Martínez
+     */
+    public void changeWorld(String act){            
         if(act == "moveNW")
             this.world[this.gps.first - 1][this.gps.second - 1]++;
         else if (act == "moveN")
@@ -146,25 +161,12 @@ public class HeuristicaBasica {
             this.world[this.gps.first + 1][this.gps.second + 1]++;
     }
     
-    public boolean checkWorld(String act){
-        if(act == "moveNW")
-            return this.world[this.gps.first - 1][this.gps.second - 1]!=2;
-        else if (act == "moveN")
-            return this.world[this.gps.first][this.gps.second - 1]!=2;
-        else if (act == "moveNE")
-            return this.world[this.gps.first + 1][this.gps.second - 1]!=2;
-        else if ( act == "moveW")
-            return this.world[this.gps.first - 1][this.gps.second]!=2;
-        else if (act == "moveE")
-            return this.world[this.gps.first + 1][this.gps.second]!=2;
-        else if (act == "moveSW")
-            return this.world[this.gps.first - 1][this.gps.second + 1]!=2;
-        else if ( act == "moveS")
-            return this.world[this.gps.first][this.gps.second + 1]!=2;
-        else
-            return this.world[this.gps.first + 1][this.gps.second + 1]!=2;
-    }
-    
+    /**
+     * Funcion encargada de determinar si el bot se encuentra completamente rodeado.
+     * @author Vicente Martínez
+     * @return boolean indica si el bot se encuentra completamente rodeado por
+     * obstaculos
+     */
     public boolean ahogado(){   
         for(int i=1; i<4; i++)
             for(int j=1; j<4; j++)
@@ -174,32 +176,44 @@ public class HeuristicaBasica {
         return true;
     }
     
+    
+    /**
+     * Funciones encargadas de comprobar si es posible moverse a una dirección. 
+     * @author Vicente Martínez
+     * @return Presenta o no obstaculo.
+     */
     public boolean isMovS(){
-        return radar[3][2]!=1;  //2 3
+        return radar[3][2]!=1;
     }
     public boolean isMovSW(){
-        return radar[3][1]!=1;  // 1 3
+        return radar[3][1]!=1;
     }
     public boolean isMovSE(){
         return radar[3][3]!=1;
     }
     public boolean isMovE(){
-        return radar[2][3]!=1;  //3 2
+        return radar[2][3]!=1;
     }
     public boolean isMovNE(){
-        return radar[1][3]!=1;  //3 1
+        return radar[1][3]!=1;
     }
     public boolean isMovN(){
-        return radar[1][2]!=1;  //2 1
+        return radar[1][2]!=1;
     }
     public boolean isMovNW(){
-        return radar[1][1]!=1;  //1 1
+        return radar[1][1]!=1; 
     }
     public boolean isMovW(){
-        return radar[2][1]!=1;  //1 2
+        return radar[2][1]!=1;
     }
     
-    
+    /**
+     * Funcion encargada de comprobar que el mapa no tiene solución, para ello
+     * se comprueba si se ha rodeado completamente al objetivo y se ha llegado a finalPoint
+     * @param act Accion elegida para moverse.
+     * @return boolean true en el caso de no existir solución, false en caso contrario.
+     * @author Vicente Martínez
+     */
     public boolean sinSolucion(String act){
                 
         if(act == "moveNW")
@@ -220,6 +234,14 @@ public class HeuristicaBasica {
             return ((this.gps.first + 1)==finalPoint[0] && (this.gps.second + 1)==finalPoint[1]);
     }
         
+    /**
+     * Funcion encargada de comprobar si se inicia heuristica 2 o 1, usará heuristica1
+     * si la distancia minima es mayor a una casilla vacía adyacente, usará heuristica2
+     * si la distancia minima es menor al resto de casillas vacias adyacentes.
+     * 
+     * @return boolean true Heuristica2, false Heuristica1 
+     * @author Vicente Martínez
+     */
     public boolean initHeuristic2(){
         double minObst= Double.POSITIVE_INFINITY;
         double minVoid= Double.POSITIVE_INFINITY;
@@ -252,62 +274,65 @@ public class HeuristicaBasica {
 
     }
     
+    /**
+     * Funcion heuristica2 algortimo basado en el algoritmo de la mano derecha, es usada
+     * cuando initHeuristic2() es true, dependiendo de las casillas adyacentes 
+     * el bot se moverá a una u otra direccion.
+     * 
+     * @return String Con la acción elegida.
+     * @author Vicente Martínez
+     */
     public String heuristic2(){
         String act= new String();
         boolean accionElegida=false;
         
         if(!isMovE() && !isMovW() && !accionElegida){
-             System.out.println("CHICANE: W-E"); 
-             
-             if(actionAnterior=="moveSE" || actionAnterior=="moveS" || actionAnterior=="moveSW"){
-                if(isMovSW()){
-                   act= "moveSW";
-                   accionElegida=true;
-                }
-                else if(isMovS()){
-                   act= "moveS";
-                   accionElegida=true;
-                }
-             }
-             else if(actionAnterior=="moveNE" || actionAnterior=="moveN" || actionAnterior=="moveNW"){
-                 if(isMovNE()){
-                   act= "moveNE";
-                   accionElegida=true;
-                }
-                else if(isMovN()){
-                   act= "moveN";
-                   accionElegida=true;
-                }
-             }
+            if(actionAnterior=="moveSE" || actionAnterior=="moveS" || actionAnterior=="moveSW"){
+               if(isMovSW()){
+                  act= "moveSW";
+                  accionElegida=true;
+               }
+               else if(isMovS()){
+                  act= "moveS";
+                  accionElegida=true;
+               }
+            }
+            else if(actionAnterior=="moveNE" || actionAnterior=="moveN" || actionAnterior=="moveNW"){
+                if(isMovNE()){
+                  act= "moveNE";
+                  accionElegida=true;
+               }
+               else if(isMovN()){
+                  act= "moveN";
+                  accionElegida=true;
+               }
+            }
         }
         
-        if(!isMovN() && !isMovS() && !accionElegida){
-             System.out.println("CHICANE: N-S"); 
-             
-             if(actionAnterior=="moveSE" || actionAnterior=="moveE" || actionAnterior=="moveNE"){
-                if(isMovSE()){
-                   act= "moveSE";
-                   accionElegida=true;
-                }
-                else if(isMovE()){
-                   act= "moveE";
-                   accionElegida=true;
-                }
-             }
-             else if(actionAnterior=="moveSW" || actionAnterior=="moveW" || actionAnterior=="moveNW"){
-                 if(isMovSW()){
-                   act= "moveSW";
-                   accionElegida=true;
-                }
-                else if(isMovW()){
-                   act= "moveW";
-                   accionElegida=true;
-                }
-             }
+        if(!isMovN() && !isMovS() && !accionElegida){ 
+            if(actionAnterior=="moveSE" || actionAnterior=="moveE" || actionAnterior=="moveNE"){
+               if(isMovSE()){
+                  act= "moveSE";
+                  accionElegida=true;
+               }
+               else if(isMovE()){
+                  act= "moveE";
+                  accionElegida=true;
+               }
+            }
+            else if(actionAnterior=="moveSW" || actionAnterior=="moveW" || actionAnterior=="moveNW"){
+                if(isMovSW()){
+                  act= "moveSW";
+                  accionElegida=true;
+               }
+               else if(isMovW()){
+                  act= "moveW";
+                  accionElegida=true;
+               }
+            }
         }
         
         if(!isMovE() && !accionElegida){
-            System.out.println("NO SE PUEDE A: E");
             if(isMovNE()){
                 act= "moveNE";
                 accionElegida=true;
@@ -318,7 +343,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovN() && !accionElegida){
-            System.out.println("NO SE PUEDE A: N");
             if(isMovNW()){
                 act= "moveNW";
                 accionElegida=true;
@@ -329,7 +353,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovW() && !accionElegida){
-            System.out.println("NO SE PUEDE A: W");
             if(isMovSW()){
                 act= "moveSW";
                 accionElegida=true;
@@ -340,7 +363,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovS() && !accionElegida){
-            System.out.println("NO SE PUEDE A: S");
             if(isMovSE()){
                 act= "moveSE";
                 accionElegida=true;
@@ -351,7 +373,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovSE() && !accionElegida){
-            System.out.println("NO SE PUEDE A: SE");
             if(isMovE()){
                 act= "moveE";
                 accionElegida=true;
@@ -362,7 +383,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovSW() && !accionElegida){
-            System.out.println("NO SE PUEDE A: SW");
             if(isMovS()){
                 act= "moveS";
                 accionElegida=true;
@@ -373,7 +393,6 @@ public class HeuristicaBasica {
             }
         }
         if(!isMovNW() && !accionElegida){
-            System.out.println("NO SE PUEDE A: NW");
             if(isMovW()){
                 act= "moveW";
                 accionElegida=true;
@@ -384,7 +403,6 @@ public class HeuristicaBasica {
             }
         }
         if(!accionElegida){
-            System.out.println("NO SE PUEDE A: NE");
             if(isMovN())
                 act= "moveN";
             else if(isMovNW())
@@ -397,18 +415,22 @@ public class HeuristicaBasica {
         }
         
         changeWorld(act);
-        System.out.println("ACCION ELEGIDA: "+act);
         return act;
     }
     
+    /**
+     * Funcion encargada de realizar la heuristica 1, es un algoritmo Greedy que 
+     * analiza el nºvisitas y la distancia gps para decidir la accion.
+     * 
+     * @return String con la accion elegida.
+     * @author Vicente Martínez
+     */
     public String heuristic1(){
         Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
         double benefit;
         finalPoint[0]= 0;
         finalPoint[1]= 0;
-
-        System.out.println("HEURISTICA 1");
 
         for(int i=1; i<4; i++){
             for(int j=1; j<4; j++){
@@ -421,7 +443,6 @@ public class HeuristicaBasica {
                     }
                 }
                 else if (i!=2 || j!=2){
-                    //System.out.println("CONTROLLER: OBSTACULO en ["+i+"]["+j+"]");
                     this.world[i][j]= -1;
                 }
             }
@@ -430,13 +451,15 @@ public class HeuristicaBasica {
         return actionAnterior;
     }
     
-    
+    /**
+     * Funcion llamada por el agente Controller que le permitirá determinar
+     * la accion a realizar.
+     * 
+     * @return String con la accion elegida.
+     * @author Vicente Martínez
+     */
     public String heuristic(){
-        
-        Pair<Integer, Integer> newpos = new Pair(2,2);
         this.minValue= Double.POSITIVE_INFINITY;
-        double benefit;
-        String badPosition;
         
         if(this.battery < 2){
             System.out.println("CONTROLLER: REFUEL");
